@@ -1,8 +1,8 @@
 import math
 
 # imgName = "./images/IMG_0903.jpeg"
-# imgName = "./images/IMG_0645.jpeg"
-imgName = "./images/IMG_2200.jpeg"
+imgName = "./images/IMG_0645.jpeg"
+# imgName = "./images/IMG_2200.jpeg"
 # imgName = "./images/starry_night_full.jpeg"
 img = None
 min_stroke_length = 5
@@ -10,7 +10,7 @@ max_stroke_length = 35
 stroke_thickness = 20
 noise_scale = 0.005
 draw_iterations = 400
-color_diff_threshold = 10
+color_diff_threshold = 5
 frame = 0
 
 def setup():
