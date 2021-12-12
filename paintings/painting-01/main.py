@@ -1,16 +1,17 @@
 import math
 
-# imgName = "./images/IMG_0903.jpeg"
-imgName = "./images/IMG_0645.jpeg"
-# imgName = "./images/IMG_2200.jpeg"
-# imgName = "./images/starry_night_full.jpeg"
+# imgName = "../../images/IMG_0903.jpeg"
+# imgName = "../../images/IMG_0645.jpeg"
+imgName = "../../images/IMG_2200.jpeg"
+# imgName = "../../images/starry_night_full.jpeg"
+# imgName = "../../images/working-mount-tam.jpeg"
 img = None
-min_stroke_length = 5
+min_stroke_length = 25
 max_stroke_length = 35
 stroke_thickness = 20
 noise_scale = 0.005
-draw_iterations = 400
-color_diff_threshold = 5
+draw_iterations = 500
+color_diff_threshold = 10
 frame = 0
 
 def setup():
@@ -21,6 +22,7 @@ def setup():
     img = loadImage(imgName)
     img.loadPixels()
     size(1968, 1476)
+    # size(5472, 3648)
 
 def draw():
     global img
@@ -87,13 +89,14 @@ def calculate_stroke_length(x, y, angle, color, min_stroke_length, max_stroke_le
     while(stroke_length < max_stroke_length):
         length_x = int(math.floor(stroke_length * cos(angle)))
         length_y = int(math.floor(stroke_length * sin(angle)))
-        end_x = max(min(x + length_x, img.width), 0)
-        end_y = max(min(y + length_y, img.width), 0)
+        end_x = max(min(x + length_x, img.width - 1), 0)
+        end_y = max(min(y + length_y, img.height -1), 0)
 
         # Image's pixels is one long list, so we much map our position to an index in order to access that specific pixel.
         index = int(end_y * img.width + end_x)
 
         # Get the pixel's color
+        # print("({0}, {1})".format(end_x, end_y))
         pixel = img.pixels[index]
 
         # Calculate color simularity
