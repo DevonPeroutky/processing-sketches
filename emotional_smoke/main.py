@@ -2,72 +2,64 @@ import sys
 import time
 
 sys.path.append('/Users/devonperoutky/Development/processing/utilities')
-print(sys.path)
+sys.path.append('/Users/devonperoutky/Development/processing/utilities/ds')
 
 import random
-from color.color_diff import calc_pixel_color_distance
+import kdtree
+from color.color_diff import calc_pixel_color_distance, rgb2lab, cie94
+
+class ColorSpaceItem(object):
+    def __init__(self, lab_data, rgb_data):
+        self.lab_color = lab_data
+        self.rgb_color = rgb_data
+
+    def __len__(self):
+        return len(self.lab_color)
+
+    def __getitem__(self, i):
+        return self.lab_color[i]
+
+    def __repr__(self):
+        return 'Item({}, {}, {}, {})'.format(self.lab_color[0], self.lab_color[1], self.lab_color[2], self.rgb_color)
 
 class ColorSpace(object):
-    def __init__(self):
-        self.space = []
-        self.used = set([])
+    def __init__(self, lab_colors):
+        self.space = kdtree.create(lab_colors)
     
-    def add_color(self, color):
-        self.space.append(color)
-
-    def remove_color(self, color):
-        self.space.remove(color)
-
-    def pop_random_color(self):
-        return self.space.pop()
-
     def pop_most_similar_color(self, neighbors):
-        # random_index = random.randint(0, len(self.space) -1)
-        # return self.space[random_index]
+        cie94_colors = [rgb2lab((red(n.COLOR), green(n.COLOR), blue(n.COLOR))) for n in neighbors if n.COLOR]
 
-        print([str(n) for n in neighbors])
-        colors = [n.COLOR for n in neighbors if n.COLOR]
-        options = [c for c in self.space if c not in self.used]
-
-        print(len(colors))
-        if not colors:
-            print("Poping a random color")
+        if not cie94_colors:
             return ColorSpaceExplorer.random_color()
 
-        t1 = time.time()
-        closest_color = None
-        closest_distance = None
-        for color_option in options:
-            # color_distance = sum([calc_pixel_color_distance(color_option, node) for node in colors])
-            color_distance = random.random()
-            if not closest_color:
-                closest_distance = color_distance
-                closest_color = color_option
-            else:
-                if color_distance < closest_distance:
-                    closest_distance = color_distance
-                    closest_color = color_option
-
-        t2 = time.time()
-        print("Finding the nearest color took {}".format(t2 - t1))
-        self.used.add(closest_color)
-        return closest_color
-
+        # CONVERT TO cie94 first??!?!?!?
+        closest_neighbor_colors = [self.space.search_nn(neighbor_color, dist=cie94) for neighbor_color in cie94_colors]
+        cleansed_colors = [color_distance_tuple for color_distance_tuple in closest_neighbor_colors if color_distance_tuple]
+        if not cleansed_colors:
+            return ColorSpaceExplorer.random_color()
+        closest_neighbor_color = min(cleansed_colors, key = lambda t: t[1])
+        closest_rgb_color = closest_neighbor_color[0].data.rgb_color
+        self.space = self.space.remove(closest_neighbor_color[0].data)
+        return color(closest_rgb_color[0], closest_rgb_color[1], closest_rgb_color[2])
 
 class ColorSpaceBuilder(object):
 
     @staticmethod
     def build_RGB_color_space(size=None):
-        color_space = ColorSpace()
         i = 0
-        for red_value in range(0, 256):
-            for green_value in range(0, 256):
-                for blue_value in range(0, 256):
+        lab_colors = []
+        for red_value in range(100, 256):
+            for green_value in range(100, 256):
+                for blue_value in range(100, 256):
                     i += 1
-                    color_space.add_color(color(red_value, green_value, blue_value))
+                    rgb_color = (red_value, green_value, blue_value)
+                    lab_color = rgb2lab(rgb_color)
+                    tree_node = ColorSpaceItem(lab_data=lab_color, rgb_data=rgb_color)
+                    lab_colors.append(tree_node)
                     if size and i >= size:
-                        return color_space
-        return color_space
+                        return ColorSpace(lab_colors=lab_colors)
+        return ColorSpace(lab_colors=lab_colors)
+
 
     def build_color_space_from_image(self):
         pass
@@ -104,11 +96,11 @@ class ColorSpaceExplorer(object):
     queue = []
     visited = set()
 
-    def __init__(self, color_space, height, width, starting_coord):
+    def __init__(self, color_space, height, width, node_size, starting_coord):
         self.color_space = color_space
         self.height = height
         self.width = width
-        self.grid = [[Coordinate(x, y) for y in range(0, height - 1)] for x in range(0, width)]
+        self.grid = [[Coordinate(x, y) for y in range(0, height - 1, node_size)] for x in range(0, width, node_size)]
 
         initial_coordiante = self.grid[starting_coord.X][starting_coord.Y]
         self.queue.append(initial_coordiante)
@@ -116,21 +108,16 @@ class ColorSpaceExplorer(object):
 
     def BFS_iteration(self, iteration_amount):
         i = 0
-        newly_colored_nodes = []
+        newly_colored_nodes = [None] * iteration_amount
         while self.queue and i < iteration_amount:
+
             # Get the next coordinate and mark as visited
             coor = self.queue.pop(0)
             visited_neighbors, unvisited_neighbors = self.get_neighbors(coor)
-            print("------------------")
-            print("Visiting {}".format(str(coor)))
-            print("Visited neighbors ({}): {}".format(len(visited_neighbors), [str(n) for n in visited_neighbors]))
-
-            # TODO: Assign the color based on visited_neighbors
             assigned_color = self.calculate_color(visited_neighbors)
-            print("Assigned color is ({}, {}, {})".format(red(assigned_color), green(assigned_color), blue(assigned_color)))
             coor.set_color(assigned_color)
             self.grid[coor.X][coor.Y] = coor
-            newly_colored_nodes.append(coor)
+            newly_colored_nodes[i] = coor
 
             # Traverse
             for neighbor in unvisited_neighbors:
@@ -170,33 +157,41 @@ class ColorSpaceExplorer(object):
 
     @staticmethod
     def random_coordinate(height, width):
-        return Coordinate(random.randint(0, width - 1), random.randint(0, height - 1), ColorSpaceExplorer.random_color())
+        red = color(220, 40, 40)
+        return Coordinate(10, 10, red)
+        # return Coordinate(random.randint(0, width - 1), random.randint(0, height - 1), red)
+        # return Coordinate(random.randint(0, width - 1), random.randint(0, height - 1), ColorSpaceExplorer.random_color())
 
 
 
 total_pixels_colored = 0
 grid_height = 1000
 grid_width = 1000
+node_size = 1 # Don't change this
 starting_coord = ColorSpaceExplorer.random_coordinate(grid_height, grid_width)
 color_space = ColorSpaceBuilder.build_RGB_color_space(grid_height * grid_width)
-print("COLOR SPACE has {} entries".format(len(color_space.space)))
-color_space_explorer = ColorSpaceExplorer(color_space=color_space, height=grid_height, width=grid_width, starting_coord=starting_coord)
+color_space.space.rebalance()
+print("COLOR SPACE has {} entries".format(len(list(color_space.space.inorder()))))
+color_space_explorer = ColorSpaceExplorer(color_space=color_space, height=grid_height, width=grid_width, starting_coord=starting_coord, node_size=node_size)
 
 
 def setup():
-    size(grid_height, grid_width)
+    # size(grid_height, grid_width)
+    fullScreen()
     background(255, 255, 255)
     noStroke()
-    frameRate(1)
+    frameRate(12)
 
 
 def draw():
-    global color_space_explorer, total_pixels_colored
-
-    nodes_to_color = color_space_explorer.BFS_iteration(100)
+    global color_space_explorer, total_pixels_colored, node_size
+    nodes_to_color = color_space_explorer.BFS_iteration(30)
     total_pixels_colored += len(nodes_to_color)
     for node in nodes_to_color:
-        if node.COLOR:
-            stroke(node.COLOR)
-            point(node.X, node.Y)
-    print("DRAWN")
+        draw_point(node=node, node_size=node_size)
+    print("DRAWN!")
+
+
+def draw_point(node, node_size):
+    fill(node.COLOR)
+    square(node.X, node.Y, node_size)
