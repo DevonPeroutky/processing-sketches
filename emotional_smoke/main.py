@@ -17,12 +17,7 @@ total_pixels_colored = 0
 
 # Initialize
 # starting_coord = ColorSpaceExplorer.random_coordinate(grid_height, grid_width)
-print("WTF IS GOING ON")
-red_color = color(220, 40, 40)
-red_value = red_color >> 16 & 0xFF
-print("DA COLOR {}".format(red_color))
-print("RED VALUE {}".format(red_value))
-starting_coord = Coordinate(10, 10, red_color)
+starting_coord = ColorSpaceExplorer.random_coordinate(grid_width, grid_height)
 print(starting_coord)
 print("Starting Coordinate {}".format(starting_coord))
 color_space = ColorSpaceBuilder.build_RGB_color_space(grid_height * grid_width)
@@ -45,7 +40,6 @@ def draw():
     total_pixels_colored += len(nodes_to_color)
     for node in nodes_to_color:
         draw_point(node=node, node_size=node_size)
-    print("DRAWN!")
 
 
 def draw_point(node, node_size):

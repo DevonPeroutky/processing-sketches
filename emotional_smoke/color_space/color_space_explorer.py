@@ -20,6 +20,7 @@ class ColorSpaceExplorer(object):
         self.queue.append(initial_coordiante)
         self.visited.add(initial_coordiante)
 
+
     def BFS_iteration(self, iteration_amount):
         i = 0
         newly_colored_nodes = [None] * iteration_amount
@@ -27,8 +28,8 @@ class ColorSpaceExplorer(object):
 
             # Get the next coordinate and mark as visited
             coor = self.queue.pop(0)
-            visited_neighbors, unvisited_neighbors = self.get_neighbors(coor)
-            assigned_color = self.calculate_color(visited_neighbors)
+            visited_neighbors, unvisited_neighbors = self._get_neighbors(coor)
+            assigned_color = self.pop_most_similar_color(visited_neighbors)
             coor.set_color(assigned_color)
             self.grid[coor.X][coor.Y] = coor
             newly_colored_nodes[i] = coor
@@ -42,7 +43,7 @@ class ColorSpaceExplorer(object):
         return newly_colored_nodes
 
 
-    def calculate_color(self, neighbors):
+    def pop_most_similar_color(self, neighbors):
         return self.color_space.pop_most_similar_color(neighbors)
 
 
@@ -54,8 +55,7 @@ class ColorSpaceExplorer(object):
                     coordinates.append(self.grid[x][y])
         return coordinates
 
-
-    def get_neighbors(self, coordinate):
+    def _get_neighbors(self, coordinate):
         visited_neighbors, unvisited_neighbors = [], []
         all_neighbors = self._generate_valid_neighboring_coordinates(coordinate=coordinate) 
         for n in all_neighbors:
@@ -65,13 +65,6 @@ class ColorSpaceExplorer(object):
 
     @staticmethod
     def random_coordinate(height, width):
-        red = color(220, 40, 40)
-        print("RED: {}".format(red))
-        coor = Coordinate(10, 10, red)
-        print(coor)
-        return coor
-        # random_x = random.randint(0, width - 1)
-        # random_y = random.randint(0, height - 1)
-        # print("RANDOM: ({}, {})".format(random_x, random_y))
-        # return Coordinate(10, 10, red)
-        # return Coordinate(random_x, random_y, red)
+        random_x = random.randint(0, width - 1)
+        random_y = random.randint(0, height - 1)
+        return Coordinate(random_x, random_y, random_rgb_color())

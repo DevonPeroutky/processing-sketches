@@ -12,9 +12,9 @@ class ColorSpaceBuilder(object):
     def build_RGB_color_space(size=None):
         i = 0
         lab_colors = []
-        for red_value in range(100, 256):
-            for green_value in range(100, 256):
-                for blue_value in range(100, 256):
+        for red_value in range(0, 256):
+            for green_value in range(0, 256):
+                for blue_value in range(0, 256):
                     i += 1
                     rgb_color = (red_value, green_value, blue_value)
                     lab_color = rgb2lab(rgb_color)
