@@ -55,9 +55,24 @@ class ColorSpaceExplorer(object):
                     coordinates.append(self.grid[x][y])
         return coordinates
 
+    def _generate_cartesian_neighboring_coordinates(self, coordinate):
+        coordinates = []
+        curr_x = coordinate.X
+        curr_y = coordinate.Y
+        if (curr_x - 1 > 0):
+            coordinates.append(self.grid[curr_x - 1][curr_y])
+        if (curr_x + 1 < self.width):
+            coordinates.append(self.grid[curr_x + 1][curr_y])
+        if (curr_y - 1 > 0):
+            coordinates.append(self.grid[curr_x][curr_y - 1])
+        if (curr_y + 1 < self.height):
+            coordinates.append(self.grid[curr_x][curr_y + 1])
+        return coordinates
+
     def _get_neighbors(self, coordinate):
         visited_neighbors, unvisited_neighbors = [], []
-        all_neighbors = self._generate_valid_neighboring_coordinates(coordinate=coordinate) 
+        # all_neighbors = self._generate_valid_neighboring_coordinates(coordinate=coordinate) 
+        all_neighbors = self._generate_cartesian_neighboring_coordinates(coordinate=coordinate) 
         for n in all_neighbors:
             (visited_neighbors if n in self.visited else unvisited_neighbors).append(n)
 
