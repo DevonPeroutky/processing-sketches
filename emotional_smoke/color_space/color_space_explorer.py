@@ -14,11 +14,14 @@ class ColorSpaceExplorer(object):
         self.color_space = color_space
         self.height = height
         self.width = width
-        self.grid = [[Coordinate(x, y) for y in range(0, height - 1, node_size)] for x in range(0, width, node_size)]
+        self.grid = [[Coordinate(x, y) for y in range(0, height, node_size)] for x in range(0, width, node_size)]
 
         initial_coordiante = self.grid[starting_coord.X][starting_coord.Y]
         self.queue.append(initial_coordiante)
         self.visited.add(initial_coordiante)
+
+        for coor in self.grid:
+            print("{}".format(len(coor)))
 
 
     def BFS_iteration(self, iteration_amount):
@@ -40,11 +43,12 @@ class ColorSpaceExplorer(object):
                 self.visited.add(neighbor)
 
             i += 1
-        return newly_colored_nodes
+        return [n for n in newly_colored_nodes if n]
 
 
     def pop_most_similar_color(self, neighbors):
-        return self.color_space.pop_most_similar_color(neighbors)
+        return self.color_space.pop_most_similar_color_optimized(neighbors)
+        # return self.color_space.pop_most_similar_color(neighbors)
 
 
     def _generate_valid_neighboring_coordinates(self, coordinate):

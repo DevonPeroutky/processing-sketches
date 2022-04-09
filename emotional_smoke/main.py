@@ -31,7 +31,7 @@ def setup():
     fullScreen()
     background(255, 255, 255)
     noStroke()
-    frameRate(24)
+    frameRate(48)
 
 
 def draw():
@@ -40,7 +40,7 @@ def draw():
     total_pixels_colored += len(nodes_to_color)
     for node in nodes_to_color:
         draw_point(node=node, node_size=node_size)
-    println(frameRate)
+    print(frameRate)
 
 
 def draw_point(node, node_size):
