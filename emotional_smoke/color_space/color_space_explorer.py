@@ -20,9 +20,6 @@ class ColorSpaceExplorer(object):
         self.queue.append(initial_coordiante)
         self.visited.add(initial_coordiante)
 
-        for coor in self.grid:
-            print("{}".format(len(coor)))
-
 
     def BFS_iteration(self, iteration_amount):
         i = 0
