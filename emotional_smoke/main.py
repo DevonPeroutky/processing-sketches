@@ -6,6 +6,7 @@ sys.path.append('/Users/devonperoutky/Development/processing/utilities/ds')
 from color_space.color_space_builder import ColorSpaceBuilder
 from color_space.color_space_explorer import ColorSpaceExplorer
 from color_space.coordinate import Coordinate
+import kdtree
 
 # Constants
 node_size = 1 # Don't change this
@@ -31,16 +32,15 @@ def setup():
     fullScreen()
     background(255, 255, 255)
     noStroke()
-    frameRate(48)
+    frameRate(24)
 
 
 def draw():
     global color_space_explorer, total_pixels_colored, node_size
-    nodes_to_color = color_space_explorer.BFS_iteration(10)
+    nodes_to_color = color_space_explorer.BFS_iteration(25)
     total_pixels_colored += len(nodes_to_color)
     for node in nodes_to_color:
         draw_point(node=node, node_size=node_size)
-    print(frameRate)
 
 
 def draw_point(node, node_size):

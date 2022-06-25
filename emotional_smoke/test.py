@@ -51,7 +51,6 @@ def draw():
             new_coordinate = Coordinate(col_idx, row_idx, next_color)
             grid[row_idx][col_idx] = new_coordinate
 
-    for row in grid:
         print("DRAWING {}".format(cell))
         # curr_coord = grid[grid_x][grid_y]
         draw_point(cell, 10)

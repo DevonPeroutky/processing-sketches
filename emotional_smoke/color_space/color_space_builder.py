@@ -45,5 +45,6 @@ class ColorSpaceBuilder(object):
         return ColorSpace(lab_colors=lab_colors)
 
 
-    def build_color_space_from_image(self):
+    @staticmethod
+    def build_color_space_from_image(img):
         pass
