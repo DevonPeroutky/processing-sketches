@@ -1,3 +1,4 @@
+import os
 import traceback
 import time
 import select
@@ -25,23 +26,18 @@ def draw():
 def grab_emotional_parameters():
     global distance_from_camera, angle_from_camera
 
-    print("Setting up FIFO reader...")
-
-    PIPE_PATH = '/Users/devonperoutky/Development/playground/python/opencv/playground/FACE_LOCATION_PIPE'
-    with open(PIPE_PATH) as fifo:
-        while True:
-            line = fifo.readline()
-            cleaned_line = line.strip()
-            if len(cleaned_line) == 0:
-                continue
-            else:
-                print("NEW LINE")
-                print(line)
-                try:
-                    location_data = json.loads(line)
-                    print(location_data)
-                    distance_from_camera = location_data.get('distance_in_inches', '50')
-                    angle_from_camera = location_data.get('angle_from_camera', '0')
-                except ValueError as e:
-                    print("Unable to parse Json")
-
+    PIPE_PATH = '/tmp/test'
+    while True:
+        with open(PIPE_PATH) as fifo:
+            while True:
+                line = fifo.readline()
+                cleaned_line = line.strip()
+                if len(cleaned_line) == 0:
+                    break
+                else:
+                    try:
+                        location_data = json.loads(line)
+                        distance_from_camera = location_data.get('distance_in_inches', '50')
+                        angle_from_camera = location_data.get('angle_from_camera', '0')
+                    except ValueError as e:
+                        print("Unable to parse Json")
