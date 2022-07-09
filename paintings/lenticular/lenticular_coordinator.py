@@ -1,10 +1,14 @@
 
 class LenticularCoordinator(object):
-    def __init__(self, width, height):
-        # self.images = images
-        # (left_img, right_img) = self.images
-        red = color(235, 64, 52)
-        blue = color(29, 61, 222)
+    def __init__(self, width, height, images):
+        self.images = images
+        (self.left_img, self.right_img) = [loadImage(img) for img in self.images]
+        self.left_img.loadPixels()
+        self.right_img.loadPixels()
+
+        print("Loaded imags")
+        print(len(self.left_img.pixels))
+        print(len(self.right_img.pixels))
 
         self.width = width
         self.height = height
@@ -14,7 +18,7 @@ class LenticularCoordinator(object):
         # Load matrix with pixels from both images
         for i in range(self.width * self.height):
             col = i % self.width
-            self.pixel_matrix[i] = red if (col % 2 == 0) else blue
+            self.pixel_matrix[i] = self.left_img.pixels[i] if (col % 2 == 0) else self.right_img.pixels[i]
 
 
     def render_image_pixels(self, x_pos):
@@ -22,22 +26,19 @@ class LenticularCoordinator(object):
         Given the distance_from_camera and angle_from_camera, return the breakdown of pixels via a 2D-array
 
         """
-        print("X POS: %s" % x_pos)
-        red = color(235, 64, 52)
-        blue = color(29, 61, 222)
         for i in range(self.width * self.height):
             col = i % self.width
 
             # If in FOV
             if abs(x_pos - col) <= self.fov_threshold:
-                self.pixel_matrix[i] = red if (col % 2 == 0) else blue
+                self.pixel_matrix[i] = self.left_img.pixels[i] if (col % 2 == 0) else self.right_img.pixels[i]
 
             # If outside right
             elif x_pos > col:
-                self.pixel_matrix[i] = red
+                self.pixel_matrix[i] = self.left_img.pixels[i]
 
             # If outside left
             elif x_pos < col:
-                self.pixel_matrix[i] = blue
+                self.pixel_matrix[i] = self.right_img.pixels[i]
 
         return self.pixel_matrix
