@@ -10,8 +10,8 @@ import kdtree
 
 # Constants
 node_size = 1 # Don't change this
-grid_height = 1000
-grid_width = 1000
+grid_height = 1120
+grid_width = 1792
 
 # Stats
 total_pixels_colored = 0
@@ -21,7 +21,7 @@ total_pixels_colored = 0
 starting_coord = ColorSpaceExplorer.random_coordinate(grid_width, grid_height)
 print(starting_coord)
 print("Starting Coordinate {}".format(starting_coord))
-color_space = ColorSpaceBuilder.build_full_RGB_color_space(grid_height * grid_width)
+color_space = ColorSpaceBuilder.build_full_RGB_color_space(size=grid_height * grid_width)
 color_space.space.rebalance()
 print("COLOR SPACE has {} entries".format(len(list(color_space.space.inorder()))))
 color_space_explorer = ColorSpaceExplorer(color_space=color_space, height=grid_height, width=grid_width, starting_coord=starting_coord, node_size=node_size)
