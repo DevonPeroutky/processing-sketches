@@ -21,18 +21,31 @@ total_pixels_colored = 0
 starting_coord = ColorSpaceExplorer.random_coordinate(grid_width, grid_height)
 print(starting_coord)
 print("Starting Coordinate {}".format(starting_coord))
-color_space = ColorSpaceBuilder.build_full_RGB_color_space(size=grid_height * grid_width)
-color_space.space.rebalance()
-print("COLOR SPACE has {} entries".format(len(list(color_space.space.inorder()))))
-color_space_explorer = ColorSpaceExplorer(color_space=color_space, height=grid_height, width=grid_width, starting_coord=starting_coord, node_size=node_size)
+
+# Instantiate globals
+color_space = None
+color_space_explorer = None
+
 
 
 def setup():
-    # size(grid_height, grid_width)
+    global color_space, color_space_explorer
     fullScreen()
     background(255, 255, 255)
     noStroke()
     frameRate(24)
+
+    # Build Color Space from Image
+    image = loadImage("../images/mount-tam-compressed.jpg")
+    image.loadPixels()
+    color_space = ColorSpaceBuilder.build_color_space_from_image(image.pixels)
+
+    # Using the RGB Color Space
+    # color_space = ColorSpaceBuilder.build_full_RGB_color_space(size=grid_height * grid_width)
+
+    color_space.space.rebalance()
+    print("COLOR SPACE has {} entries".format(len(list(color_space.space.inorder()))))
+    color_space_explorer = ColorSpaceExplorer(color_space=color_space, height=grid_height, width=grid_width, starting_coord=starting_coord, node_size=node_size)
 
 
 def draw():
