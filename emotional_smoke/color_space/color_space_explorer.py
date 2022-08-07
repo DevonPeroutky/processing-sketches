@@ -43,8 +43,8 @@ class ColorSpaceExplorer(object):
         return [n for n in newly_colored_nodes if n]
 
     def pop_most_similar_color(self, neighbors):
-        # return self.color_space.pop_most_similar_color_optimized(neighbors)
-        return self.color_space.pop_most_similar_color(neighbors)
+        return self.color_space.pop_most_similar_color_optimized(neighbors)
+        # return self.color_space.pop_most_similar_color(neighbors)
 
 
     def _generate_valid_neighboring_coordinates(self, coordinate):
