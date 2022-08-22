@@ -27,7 +27,7 @@ num_rows = 0
 num_cols = 0
 z_noise_offset = 0
 grid_scale_factor = .25
-num_lines = 5
+num_lines = 500
 left_x, right_x, top_y, bottom_y = [0]*4
 lines = {}
 
@@ -36,7 +36,8 @@ def setup():
     size(1000, 1000)
     background(255)
     # noLoop()
-    frameRate(1)
+    # frameRate(1)
+    print(frameRate)
 
     left_x = int(width * (0-grid_scale_factor))
     right_x = int(width * (1 + grid_scale_factor))
@@ -52,7 +53,7 @@ def setup():
     print("TOTAL DIMENSIONS: {} x {}".format(num_cols * resolution, num_rows * resolution))
     print("RESOLUTION: {}".format(resolution))
 
-    lines = { idx: FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=random.randint(3, 10)) for idx in range(num_lines)}
+    lines = { idx: FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=10) for idx in range(num_lines)}
 
 def draw():
     global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, num_lines, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines
