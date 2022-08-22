@@ -1,23 +1,3 @@
-"""
-Betterments:
-    - Is there a way to do any smoothing?
-    - WTF is drawCurve? Is there a configuration we need to set, to just get a line and not a shape?
-
-Todos
-    - We need a color palette. 
-    - We need it to be dynamic
-
-Variables
-    - Colors of lines/shapes    <-- Emotion
-    - Length of lines/shapes    <-- ???
-    - Spawn point               <-- Face location
-    - Flow field angles         <-- ???
-    - Opacity of lines          <-- Time
-
-
-"""
-
-
 import random
 
 noise_step = .003
@@ -85,8 +65,8 @@ def draw():
         # WTF is going on with this
         # draw_curve(x=x, y=y, num_steps=50, angle_grid=angle_grid)
 
-        # PAY ATTENTION TO THIS
-        z_noise_offset += z_noise_step
+    # PAY ATTENTION TO THIS
+    z_noise_offset += z_noise_step
 
 def draw_vector(cx, cy, len, angle):
   pushMatrix()
@@ -102,7 +82,6 @@ def plot_point(x, y, num_steps, angle_grid):
 
     fill(0)
     for n in range(num_steps):
-        point(x, y)
 
         x_offset = x - left_x
         y_offset = y - top_y
