@@ -11,11 +11,10 @@ Todos
 Variables
     - Colors of lines/shapes    <-- Emotion
     - Length of lines/shapes    <-- ???
+    - Lifespan of the lines     <-- Magnitude of the emotion. Tie into Length?
     - Spawn point               <-- Face location
     - Flow field angles         <-- ???
     - Opacity of lines          <-- Time
-
-
 """
 
 from shape import FlowLine
@@ -30,14 +29,14 @@ z_noise_offset = 0
 grid_scale_factor = .25
 num_lines = 5
 left_x, right_x, top_y, bottom_y = [0]*4
-lines = []
+lines = {}
 
 def setup():
     global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines
     size(1000, 1000)
     background(255)
     # noLoop()
-    frameRate(2)
+    frameRate(1)
 
     left_x = int(width * (0-grid_scale_factor))
     right_x = int(width * (1 + grid_scale_factor))
@@ -53,16 +52,11 @@ def setup():
     print("TOTAL DIMENSIONS: {} x {}".format(num_cols * resolution, num_rows * resolution))
     print("RESOLUTION: {}".format(resolution))
 
-    for _ in range(num_lines):
-        x = random.randint(left_x, right_x)
-        y = random.randint(top_y, bottom_y)
-        line = FlowLine(x=x, y=y, decay_rate=10, color=0, max_length=5)
-        lines.append(line)
+    lines = { idx: FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=random.randint(3, 10)) for idx in range(num_lines)}
 
 def draw():
     global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, num_lines, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines
     background(255)
-    print(frameRate)
 
     # Calculate Angle Grid
     y_noise_offset = 0
@@ -82,11 +76,11 @@ def draw():
     #         strokeWeight(.7)
     #         draw_vector(x, y, resolution, angle_grid[row][col])
 
-
-    print(frameCount)
-    for (idx, line) in enumerate(lines):
+    # FlowLine Management
+    for (key, line) in lines.items():
         line.draw_next_step(angle_grid, resolution, left_x, top_y)
-        print("Line {} is dead? {}".format(idx, line.is_dead()))
+        if line.is_dead():
+            lines.pop(key)
 
     z_noise_offset += z_noise_step
 

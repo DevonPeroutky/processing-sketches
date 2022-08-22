@@ -45,7 +45,8 @@ class FlowLineSegment:
 
 
 class FlowLine:
-    def __init__(self, x, y, decay_rate, color, max_length):
+
+    def __init__(self, x, y, color, max_length):
         self.x = x
         self.y = y
         self.curr_length = 0
@@ -58,36 +59,42 @@ class FlowLine:
     def is_dead(self):
         return all([v.is_dead() for v in self.vectors])
 
-    def draw_next_step(self, angle_grid, resolution, left_x, top_y):
-        if (self.curr_length >= self.max_length):
-            self.decompose()
-        else:
-            step_size = resolution
 
-            fill(self.color)
+    def _spawn_new_segment(self, angle_grid, resolution, left_x, top_y):
+        step_size = resolution
 
-            # Determine angle
-            x_offset = self.x - left_x
-            y_offset = self.y - top_y
-            column_index = int(x_offset / resolution)
-            row_index = int(y_offset / resolution)
-            row_index = row_index if row_index < len(angle_grid) else len(angle_grid) - 1
-            column_index = column_index if column_index < len(angle_grid[row_index]) else len(angle_grid[row_index]) - 1
-            grid_angle = angle_grid[row_index][column_index]
+        fill(self.color)
 
-            # New LineSegment
-            line_segment = FlowLineSegment(self.x, self.y, step_size, grid_angle, self.segment_life_span)
-            line_segment.draw_next_step()
-            self.vectors.append(line_segment)
+        # Determine angle
+        x_offset = self.x - left_x
+        y_offset = self.y - top_y
+        column_index = int(x_offset / resolution)
+        row_index = int(y_offset / resolution)
+        row_index = row_index if row_index < len(angle_grid) else len(angle_grid) - 1
+        column_index = column_index if column_index < len(angle_grid[row_index]) else len(angle_grid[row_index]) - 1
+        grid_angle = angle_grid[row_index][column_index]
 
-            # Iterate
-            x_step = step_size * cos(grid_angle)
-            y_step = step_size * sin(grid_angle)
-            self.x = self.x + x_step
-            self.y = self.y + y_step
-            self.curr_length += 1
+        # New LineSegment
+        line_segment = FlowLineSegment(self.x, self.y, step_size, grid_angle, self.segment_life_span)
+        line_segment.draw_next_step()
+        self.vectors.append(line_segment)
 
-    def decompose(self):
+        # Iterate
+        x_step = step_size * cos(grid_angle)
+        y_step = step_size * sin(grid_angle)
+        self.x = self.x + x_step
+        self.y = self.y + y_step
+        self.curr_length += 1
+
+
+    def _rerender(self):
         for vector in self.vectors:
             vector.draw_next_step()
+
+
+    def draw_next_step(self, angle_grid, resolution, left_x, top_y):
+        if (self.curr_length < self.max_length):
+            self._spawn_new_segment(angle_grid, resolution, left_x, top_y)
+
+        self._rerender()
 
