@@ -8,9 +8,10 @@ num_cols = 0
 z_noise_offset = 0
 grid_scale_factor = 0
 num_lines = 500
+left_x, right_x, top_y, bottom_y = [0]*4
 
 def setup():
-    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor
+    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y
     size(1000, 1000)
     background(255)
     noLoop()
@@ -27,11 +28,13 @@ def setup():
     angle_grid = [[0 for x in range(num_cols)] for y in range(num_rows)]
 
 def draw():
-    global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, num_lines, grid_scale_factor
+    global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, num_lines, grid_scale_factor, left_x, right_x, top_y, bottom_y
     background(255)
     print("COLS: {}".format(num_cols))
     print("ROWS: {}".format(num_rows))
     print("TOTAL DIMENSIONS: {} x {}".format(num_cols * resolution, num_rows * resolution))
+    print(left_x)
+    print(right_x)
 
     # Calculate Angle Grid
     y_noise_offset = 0
@@ -54,8 +57,8 @@ def draw():
     # draw_curve(x=100, y=250, num_steps=20, angle_grid=angle_grid, grid_scale_factor=grid_scale_factor)
     # plot_point(x=500, y=250, num_steps=50, angle_grid=angle_grid, grid_scale_factor=grid_scale_factor)
     for i in range(num_lines):
-        x = random.randint(0, num_cols*resolution)
-        y = random.randint(0, num_rows*resolution)
+        x = random.randint(left_x, right_x)
+        y = random.randint(top_y, bottom_y)
         plot_point(x=x, y=y, num_steps=50, angle_grid=angle_grid, grid_scale_factor=grid_scale_factor)
 
     z_noise_offset += noise_step
@@ -78,19 +81,15 @@ def plot_point(x, y, num_steps, angle_grid, grid_scale_factor):
     for n in range(num_steps):
         point(x, y)
 
-        print("({}, {})".format(x, y))
         x_offset = x - left_x
         y_offset = y - top_y
         column_index = int(x_offset / resolution)
         row_index = int(y_offset / resolution)
-        print("Indexes: ({}, {})".format(column_index, row_index))
 
         row_index = row_index if row_index < len(angle_grid) else len(angle_grid) - 1
         column_index = column_index if column_index < len(angle_grid[row_index]) else len(angle_grid[row_index]) - 1
-        print("EDGED INDEXES: ({}, {})".format(column_index, row_index))
         grid_angle = angle_grid[row_index][column_index]
         draw_vector(x, y, resolution, grid_angle)
-
         x_step = step_size * cos(grid_angle)
         y_step = step_size * sin(grid_angle)
         x = x + x_step
