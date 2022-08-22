@@ -4,7 +4,7 @@ angle_grid = None
 
 def setup():
     global angle_grid, resolution
-    size(1000, 1000)
+    size(1000, 500)
     noLoop()
 
     left_x = int(width * -0.5)
@@ -58,18 +58,23 @@ def draw_curve(x, y, num_steps):
     for n in range(num_steps):
         curveVertex(x, y)
 
+        print("({}, {})".format(x, y))
         x_offset = x - left_x
         y_offset = y - top_y
         column_index = int(x_offset / resolution)
         row_index = int(y_offset / resolution)
+        print("Indexes: ({}, {})".format(column_index, row_index))
 
         # NOTE: normally you want to check the bounds here
         column_index = column_index if column_index < len(angle_grid) else len(angle_grid) - 1
         row_index = row_index if row_index < len(angle_grid[column_index]) else len(angle_grid[column_index]) - 1
+        print("EDGED INDEXES: ({}, {})".format(column_index, row_index))
         grid_angle = angle_grid[column_index][row_index]
+        print("ANGLE: {}".format(grid_angle))
 
         x_step = step_size * cos(grid_angle)
         y_step = step_size * sin(grid_angle)
+        print("Step Sizes: {} & {}".format(x_step, y_step))
         x = x + x_step
         y = y + y_step
     endShape()
