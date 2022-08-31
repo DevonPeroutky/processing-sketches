@@ -34,23 +34,10 @@ class FlowLineSegment:
         self.life = life
         self.life_remaining = life
 
-    def draw_next_step(self):
+    def draw(self):
         # calc new color using opacity from life_remaining 
         opacity = max(round(float(self.life_remaining) / self.life, 1), 0)
 
-        # opacity_to_hexidecimal = {
-        #     0: "00",
-        #     .1: "1A",
-        #     .2: "33",
-        #     .3: "4D",
-        #     .4: "66",
-        #     .5: "80",
-        #     .6: "99",
-        #     .7: "B3",
-        #     .8: "CC",
-        #     .9: "E6",
-        #     1: "FF"
-        # }
         opacity_to_hexidecimal = {
             0: 0x00FFFFFF,
             .1: 0x1A000000,
@@ -64,9 +51,7 @@ class FlowLineSegment:
             .9: 0xE6000000,
             1: 0xFF000000
         }
-        # black = "000000"
         hex_opacity = opacity_to_hexidecimal.get(opacity, opacity_to_hexidecimal[1])
-        # print("HEX OPACITY {}". format(hex_opacity))
         hexidecimal_color = "0x{}000000".format(hex_opacity)
 
         stroke(hex_opacity)
@@ -77,7 +62,6 @@ class FlowLineSegment:
 
     def is_dead(self):
         return self.life_remaining < 1
-
 
 class FlowLine:
 
@@ -110,24 +94,30 @@ class FlowLine:
         # New LineSegment
         life_span = self.max_length
         line_segment = FlowLineSegment(self.x, self.y, step_size, grid_angle, life_span)
-        line_segment.draw_next_step()
+        line_segment.draw()
         self.vectors.append(line_segment)
 
         # Iterate
         x_step = step_size * cos(grid_angle)
         y_step = step_size * sin(grid_angle)
+
+        # Debug
+        # print("X: {}".format(self.x))
+        # print("Y: {}".format(self.y))
+        # print("GRID ANGLE: {} --> {}".format(grid_angle, degrees(grid_angle)))
+        # print("({}, {}) + ({}, {})".format(self.x, self.y, x_step, y_step))
+
         self.x = self.x + x_step
         self.y = self.y + y_step
         self.curr_length += 1
 
     def _rerender(self):
-        return [vector.draw_next_step() for vector in self.vectors if not vector.is_dead()]
+        return [vector.draw() for vector in self.vectors if not vector.is_dead()]
 
     def _decay_segments(self):
         decay_amount = min(self.max_length - self.life + 1, self.max_length)
         for i in range(0, decay_amount):
             self.vectors[i].decay(decay_rate=1)
-        self.life = self.life - 1
 
     def draw_next_step(self, angle_grid, resolution, left_x, top_y):
         if (self.curr_length < self.max_length):
@@ -136,4 +126,6 @@ class FlowLine:
             self._decay_segments()
         
         # print([v.life_remaining for v in self.vectors])
+        self.life = self.life - 1
         self._rerender()
+
