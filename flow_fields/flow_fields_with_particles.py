@@ -1,12 +1,7 @@
 """
-Betterments:
-    - Is there a way to do any smoothing?
-    - WTF is drawCurve? Is there a configuration we need to set, to just get a line and not a shape?
-    - IS draw line correct? Feel like the angle of the line is off (relatvie to the grid). Possible the degrees -> radians are wrong
-
 Todos
     - We need a color palette. 
-    - Lines need to dy gracefully
+    - Lines need to dye gracefully
     - We need it to be dynamic
 
 Variables
@@ -15,7 +10,7 @@ Variables
     - Lifespan of the lines     <-- Magnitude of the emotion. Tie into Length?
     - Spawn point               <-- Face location
     - Flow field angles         <-- ???
-    - Opacity of lines          <-- Time
+    - Opacity of lines          <-- Decay over Time
 """
 
 from shape import FlowLine
@@ -23,18 +18,18 @@ from particle import FlowParticle
 from flow_line import FlowCurve
 import random
 
-noise_step = .02
+noise_step = .03
 z_noise_step = .005
 angle_grid = [[]]
 num_rows = 0
 num_cols = 0
 z_noise_offset = 0
 grid_scale_factor = .2
-lines_per_render = 10
+lines_per_render = 15
 left_x, right_x, top_y, bottom_y = [0]*4
 starting_num_lines = 0
 line_length = 500
-max_lines_number = 10
+max_lines_number = 5000
 lines = {}
 resolution_factor = .01
 
@@ -71,7 +66,6 @@ def setup():
 
 def draw():
     global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines, lines_per_render, line_length, max_lines_number
-    # background(255)
 
     # Calculate Angle Grid
     y_noise_offset = 0
@@ -84,28 +78,29 @@ def draw():
         y_noise_offset += noise_step
 
     # Visualize FlowField
-    for row in range(0, num_rows):
-        for col in range(0, num_cols):
-            x = col * resolution
-            y = row * resolution
-            strokeWeight(.7)
-            draw_vector(x, y, resolution, angle_grid[row][col])
+    # for row in range(0, num_rows):
+    #     for col in range(0, num_cols):
+    #         x = col * resolution
+    #         y = row * resolution
+    #         strokeWeight(.7)
+    #         draw_vector(x, y, resolution, angle_grid[row][col])
 
     # Spawn new lines
     for i in range(1, lines_per_render+1):
         if (len(lines.keys()) < max_lines_number):
-            line_key = (frameCount * i) + i
-            lines[line_key] = FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length)
+            line_key = random.randint(0, 999999999)
+            # lines[line_key] = FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length)
             # lines[line_key] = FlowCurve(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length, angle_grid=angle_grid, resolution=resolution, left_x=left_x, top_y=top_y)
             lines[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), max_speed=2, color=color(0,0,0))
 
     # FlowLine Management
-    for (_, line) in lines.items():
-        line.iterate(angle_grid, resolution, left_x, top_y)
-        # line.iterate(angle_grid, resolution, left_x, top_y)
-        # if line.is_dead():
-        #     lines.pop(key)
+    for (key, line) in lines.items():
+        if line.is_out_of_bounds(left_x, top_y):
+            lines.pop(key)
+        else:
+            line.iterate(angle_grid, resolution, left_x, top_y)
 
+    print(len(lines.keys()))
     # z_noise_offset += z_noise_step
 
 

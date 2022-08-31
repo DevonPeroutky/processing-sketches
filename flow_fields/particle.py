@@ -10,7 +10,6 @@ class FlowParticle:
         self.prev_pos = self.pos.copy()
 
 
-
     def iterate(self, angle_grid, resolution, left_x, top_y):
 
         # Determine angle
@@ -30,6 +29,8 @@ class FlowParticle:
         self.velocity.add(self.acc)
         self.velocity.limit(self.max_speed)
         self.pos.add(self.velocity)
+
+        # Reset Acceleration
         self.acc.mult(0)
 
         # Draw
@@ -41,5 +42,9 @@ class FlowParticle:
         self.prev_pos.x = self.pos.x
         self.prev_pos.y = self.pos.y
 
-        # Handle Edges
+    def is_out_of_bounds(self, left_x, top_y):
+        x_pos = self.pos.x - left_x
+        y_pos = self.pos.y - top_y
+        return x_pos < left_x or x_pos > width - left_x or y_pos < top_y or y_pos > height - top_y
+
 
