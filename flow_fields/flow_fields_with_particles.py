@@ -6,6 +6,7 @@ Betterments:
 
 Todos
     - We need a color palette. 
+    - Lines need to dy gracefully
     - We need it to be dynamic
 
 Variables
@@ -27,7 +28,8 @@ num_rows = 0
 num_cols = 0
 z_noise_offset = 0
 grid_scale_factor = .25
-num_lines = 500
+num_lines = 5
+lines_per_render = 1
 left_x, right_x, top_y, bottom_y = [0]*4
 lines = {}
 
@@ -36,8 +38,8 @@ def setup():
     size(1000, 1000)
     background(255)
     # noLoop()
-    # frameRate(1)
-    print(frameRate)
+    frameRate(1)
+    # print(frameRate)
 
     left_x = int(width * (0-grid_scale_factor))
     right_x = int(width * (1 + grid_scale_factor))
@@ -48,15 +50,15 @@ def setup():
     num_cols = int((right_x - left_x) / resolution)
     num_rows = int((bottom_y - top_y) / resolution)
     angle_grid = [[0 for x in range(num_cols)] for y in range(num_rows)]
-    print("COLS: {}".format(num_cols))
+    # print("COLS: {}".format(num_cols))
     print("ROWS: {}".format(num_rows))
     print("TOTAL DIMENSIONS: {} x {}".format(num_cols * resolution, num_rows * resolution))
     print("RESOLUTION: {}".format(resolution))
 
-    lines = { idx: FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=10) for idx in range(num_lines)}
+    # lines = { idx: FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=10) for idx in range(num_lines)}
 
 def draw():
-    global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, num_lines, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines
+    global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, num_lines, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines, lines_per_render
     background(255)
 
     # Calculate Angle Grid
@@ -76,6 +78,10 @@ def draw():
     #         y = row * resolution
     #         strokeWeight(.7)
     #         draw_vector(x, y, resolution, angle_grid[row][col])
+    for i in range(1, lines_per_render+1):
+        line_key = (frameRate * i) + i
+        print("Adding line with key {}".format(line_key))
+        lines[line_key] = FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=10)
 
     # FlowLine Management
     for (key, line) in lines.items():
