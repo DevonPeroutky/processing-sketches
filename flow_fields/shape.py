@@ -56,6 +56,7 @@ class FlowLineSegment:
 
         # stroke(hex_opacity)
         stroke(opacity_to_hexidecimal.get(1))
+        strokeWeight(.6)
         draw_vector(self.x, self.y, self.length, self.angle)
 
     def decay(self, decay_rate):
@@ -73,7 +74,7 @@ class FlowLine:
         self.color = color
         self.max_length = max_length
         self.life = max_length
-        self.vectors = [] * 10
+        self.vectors = [] * max_length
 
     def is_dead(self):
         return all([v.is_dead() for v in self.vectors])
@@ -88,8 +89,8 @@ class FlowLine:
         y_offset = self.y - top_y
         column_index = int(x_offset / resolution)
         row_index = int(y_offset / resolution)
-        row_index = row_index if row_index < len(angle_grid) else len(angle_grid) - 1
-        column_index = column_index if column_index < len(angle_grid[row_index]) else len(angle_grid[row_index]) - 1
+        row_index = max(0, row_index) if row_index < len(angle_grid) else len(angle_grid) - 1
+        column_index = max(0, column_index) if column_index < len(angle_grid[row_index]) else len(angle_grid[row_index]) - 1
         grid_angle = angle_grid[row_index][column_index]
 
         # New LineSegment
@@ -120,7 +121,7 @@ class FlowLine:
         for i in range(0, decay_amount):
             self.vectors[i].decay(decay_rate=1)
 
-    def draw_next_step(self, angle_grid, resolution, left_x, top_y):
+    def iterate(self, angle_grid, resolution, left_x, top_y):
         if (self.curr_length < self.max_length):
             self._spawn_new_segment(angle_grid, resolution, left_x, top_y)
         else:
@@ -129,4 +130,3 @@ class FlowLine:
         # print([v.life_remaining for v in self.vectors])
         self.life = self.life - 1
         self._rerender()
-
