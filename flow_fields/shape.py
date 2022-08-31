@@ -54,7 +54,8 @@ class FlowLineSegment:
         hex_opacity = opacity_to_hexidecimal.get(opacity, opacity_to_hexidecimal[1])
         hexidecimal_color = "0x{}000000".format(hex_opacity)
 
-        stroke(hex_opacity)
+        # stroke(hex_opacity)
+        stroke(opacity_to_hexidecimal.get(1))
         draw_vector(self.x, self.y, self.length, self.angle)
 
     def decay(self, decay_rate):

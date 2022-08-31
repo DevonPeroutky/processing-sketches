@@ -21,18 +21,18 @@ Variables
 from shape import FlowLine
 import random
 
-noise_step = .03
+noise_step = .02
 z_noise_step = .005
 angle_grid = [[]]
 num_rows = 0
 num_cols = 0
 z_noise_offset = 0
-grid_scale_factor = 0
-lines_per_render = 1
+grid_scale_factor = .1
+lines_per_render = 10
 left_x, right_x, top_y, bottom_y = [0]*4
 starting_num_lines = 0
 line_length = 100
-max_lines_number = 10000
+max_lines_number = 100
 lines = {}
 
 def setup():
@@ -62,7 +62,7 @@ def setup():
 
 def draw():
     global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines, lines_per_render, line_length, max_lines_number
-    background(255)
+    # background(255)
 
     # Calculate Angle Grid
     y_noise_offset = 0
@@ -88,16 +88,18 @@ def draw():
     for i in range(1, lines_per_render+1):
         if (len(lines.keys()) < max_lines_number):
             line_key = (frameCount * i) + i
-            print("Adding line with key {}".format(line_key))
+            # print("Adding line with key {}".format(line_key))
             lines[line_key] = FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length)
 
     # FlowLine Management
     for (key, line) in lines.items():
         line.draw_next_step(angle_grid, resolution, left_x, top_y)
         if line.is_dead():
+            # print("Removing {}".format(key))
             lines.pop(key)
 
-    z_noise_offset += z_noise_step
+    print(len(lines.keys()))
+    # z_noise_offset += z_noise_step
 
 
 def draw_vector(cx, cy, len, angle):
