@@ -1,11 +1,13 @@
 
 class FlowParticle:
-    def __init__(self, x, y, max_speed, color):
+    def __init__(self, x, y, max_speed, color, max_length):
+        self.max_length = max_length
         self.pos = PVector(x, y)
         self.velocity = PVector(0, 0)
         self.acc = PVector(0, 0)
         self.color = color
         self.max_speed = max_speed
+        self.length = 0
 
         self.prev_pos = self.pos.copy()
 
@@ -34,13 +36,19 @@ class FlowParticle:
         self.acc.mult(0)
 
         # Draw
-        stroke(self.color)
+        # stroke(self.color)
+        stroke(199, 13, 58, 80);
         strokeWeight(.3)
         line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
 
-        # Update previous.
+        # Update
         self.prev_pos.x = self.pos.x
         self.prev_pos.y = self.pos.y
+        self.length += self.velocity.mag()
+
+    def is_finished(self, left_x, top_y):
+        return self.is_out_of_bounds(left_x=left_x, top_y=top_y) or self.length > self.max_length
+        
 
     def is_out_of_bounds(self, left_x, top_y):
         x_pos = self.pos.x - left_x

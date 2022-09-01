@@ -1,5 +1,6 @@
 """
 Todos
+    - Experiment with line lengths?
     - We need a color palette. 
     - Lines need to dye gracefully
     - We need it to be dynamic
@@ -11,6 +12,14 @@ Variables
     - Spawn point               <-- Face location
     - Flow field angles         <-- ???
     - Opacity of lines          <-- Decay over Time
+
+Algo
+    1. Read lastest payload from pipe
+    2. Create FlowParticle for each Emotion:
+        FlowParticle(x=face_center_x, y=face_center_y, max_speed=2, color=color_palette.get(emotion))
+
+
+
 """
 
 from shape import FlowLine
@@ -25,11 +34,11 @@ num_rows = 0
 num_cols = 0
 z_noise_offset = 0
 grid_scale_factor = .2
-lines_per_render = 15
+lines_per_render = 100
 left_x, right_x, top_y, bottom_y = [0]*4
 starting_num_lines = 0
-line_length = 500
-max_lines_number = 5000
+line_length = 50
+max_lines_number = 100000
 lines = {}
 resolution_factor = .01
 
@@ -86,22 +95,23 @@ def draw():
     #         draw_vector(x, y, resolution, angle_grid[row][col])
 
     # Spawn new lines
-    for i in range(1, lines_per_render+1):
+    for _ in range(1, lines_per_render+1):
         if (len(lines.keys()) < max_lines_number):
             line_key = random.randint(0, 999999999)
             # lines[line_key] = FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length)
             # lines[line_key] = FlowCurve(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length, angle_grid=angle_grid, resolution=resolution, left_x=left_x, top_y=top_y)
-            lines[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), max_speed=2, color=color(0,0,0))
+            lines[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), max_speed=2, color=color(0,0,0), max_length=line_length)
 
     # FlowLine Management
     for (key, line) in lines.items():
-        if line.is_out_of_bounds(left_x, top_y):
+        if line.is_finished(left_x, top_y):
             lines.pop(key)
         else:
             line.iterate(angle_grid, resolution, left_x, top_y)
 
-    print(len(lines.keys()))
     # z_noise_offset += z_noise_step
+    # print(len(lines.keys()))
+    print(frameRate)
 
 
 def draw_vector(cx, cy, len, angle):
