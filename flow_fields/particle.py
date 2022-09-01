@@ -1,3 +1,12 @@
+"""
+Variables
+    - Colors of lines/shapes    <-- Emotion
+    - Length of lines/shapes    <-- The degree of cohesiveness of the emotion? Constant for now
+    - Lifespan of the lines     <-- Magnitude of the emotion. Tie into Length? Constant for now
+    - Spawn point               <-- Face location
+    - Flow field angles         <-- ???
+    - Opacity of lines          <-- Decay over Time
+"""
 
 class FlowParticle:
     def __init__(self, x, y, max_speed, color, max_length):
@@ -11,6 +20,8 @@ class FlowParticle:
 
         self.prev_pos = self.pos.copy()
 
+    def __str__(self):
+        return "Position ({}, {}) Velocity: {}, Color: {}".format(self.pos.x, self.pos.y, self.velocity.mag(), self.color)
 
     def iterate(self, angle_grid, resolution, left_x, top_y):
 
@@ -46,6 +57,7 @@ class FlowParticle:
         self.prev_pos.y = self.pos.y
         self.length += self.velocity.mag()
 
+
     def is_finished(self, left_x, top_y):
         return self.is_out_of_bounds(left_x=left_x, top_y=top_y) or self.length > self.max_length
         
@@ -54,5 +66,3 @@ class FlowParticle:
         x_pos = self.pos.x - left_x
         y_pos = self.pos.y - top_y
         return x_pos < left_x or x_pos > width - left_x or y_pos < top_y or y_pos > height - top_y
-
-

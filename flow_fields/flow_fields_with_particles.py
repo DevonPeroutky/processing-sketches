@@ -22,7 +22,13 @@ Algo
 
 
 """
+import sys
+sys.path.append('/Users/devonperoutky/Development/processing/utilities')
+sys.path.append('/Users/devonperoutky/Development/processing/utilities/unix_pipes')
 
+from flow_particle_factory import FlowParticleFactory
+from utils import draw_vector, visualize_flow_field
+from reader import UnixPipeReader
 from shape import FlowLine
 from particle import FlowParticle
 from flow_line import FlowCurve
@@ -48,9 +54,8 @@ def setup():
     size(1000, 1000)
     background(255)
     smooth()
-    # noLoop()
-    # frameRate(1)
-    # print(frameRate)
+
+    thread("grab_emotional_parameters")
 
     left_x = int(width * (0-grid_scale_factor))
     right_x = int(width * (1 + grid_scale_factor))
@@ -74,6 +79,7 @@ def setup():
     print("RESOLUTION: {}".format(resolution))
     print("NUMBER OF LINES: {}".format(max_lines_number))
 
+
 def draw():
     global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines, lines_per_render, line_length, max_lines_number
 
@@ -88,19 +94,12 @@ def draw():
         y_noise_offset += noise_step
 
     # Visualize FlowField
-    # for row in range(0, num_rows):
-    #     for col in range(0, num_cols):
-    #         x = col * resolution
-    #         y = row * resolution
-    #         strokeWeight(.7)
-    #         draw_vector(x, y, resolution, angle_grid[row][col])
+    visualize_flow_field(angle_grid, num_rows, num_cols, resolution)
 
     # Spawn new lines
     for _ in range(1, lines_per_render+1):
         if (len(lines.keys()) < max_lines_number):
             line_key = random.randint(0, 999999999)
-            # lines[line_key] = FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length)
-            # lines[line_key] = FlowCurve(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length, angle_grid=angle_grid, resolution=resolution, left_x=left_x, top_y=top_y)
             lines[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), max_speed=2, color=color(0,0,0), max_length=random.randint(0, line_length))
 
     # FlowLine Management
@@ -111,13 +110,14 @@ def draw():
             line.iterate(angle_grid, resolution, left_x, top_y)
 
     z_noise_offset += z_noise_step
-    # print(len(lines.keys()))
-    print(frameRate)
 
+def grab_emotional_parameters():
+    FIFO = "/tmp/EMOTIONAL_PIPE"
+    UnixPipeReader().open_json_pipe(FIFO, update_configuration_from_emotions)
 
-def draw_vector(cx, cy, len, angle):
-  pushMatrix()
-  translate(cx, cy)
-  rotate(angle)
-  line(0,0,len, 0)
-  popMatrix()
+def update_configuration_from_emotions(emotions):
+    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines, line_length
+
+    for emotion in emotions:
+        particles = FlowParticleFactory.generate_particles_from_emotion_payload(emotion)
+    
