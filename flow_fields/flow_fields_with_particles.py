@@ -7,8 +7,8 @@ Todos
 
 Variables
     - Colors of lines/shapes    <-- Emotion
-    - Length of lines/shapes    <-- ???
-    - Lifespan of the lines     <-- Magnitude of the emotion. Tie into Length?
+    - Length of lines/shapes    <-- The degree of cohesiveness of the emotion? Constant?
+    - Lifespan of the lines     <-- Magnitude of the emotion. Tie into Length? Constant?
     - Spawn point               <-- Face location
     - Flow field angles         <-- ???
     - Opacity of lines          <-- Decay over Time
@@ -16,6 +16,7 @@ Variables
 Algo
     1. Read lastest payload from pipe
     2. Create FlowParticle for each Emotion:
+        # Lifespan? Line Length? 
         FlowParticle(x=face_center_x, y=face_center_y, max_speed=2, color=color_palette.get(emotion))
 
 
@@ -28,7 +29,7 @@ from flow_line import FlowCurve
 import random
 
 noise_step = .03
-z_noise_step = .005
+z_noise_step = 0
 angle_grid = [[]]
 num_rows = 0
 num_cols = 0
@@ -100,7 +101,7 @@ def draw():
             line_key = random.randint(0, 999999999)
             # lines[line_key] = FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length)
             # lines[line_key] = FlowCurve(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length, angle_grid=angle_grid, resolution=resolution, left_x=left_x, top_y=top_y)
-            lines[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), max_speed=2, color=color(0,0,0), max_length=line_length)
+            lines[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), max_speed=2, color=color(0,0,0), max_length=random.randint(0, line_length))
 
     # FlowLine Management
     for (key, line) in lines.items():
@@ -109,7 +110,7 @@ def draw():
         else:
             line.iterate(angle_grid, resolution, left_x, top_y)
 
-    # z_noise_offset += z_noise_step
+    z_noise_offset += z_noise_step
     # print(len(lines.keys()))
     print(frameRate)
 
