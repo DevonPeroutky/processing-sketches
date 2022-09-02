@@ -1,3 +1,4 @@
+from emotional_color_palette import EmotionalColorPalette
 from flow_particle_factory import FlowParticleFactory
 from utils import visualize_flow_field
 
@@ -8,11 +9,11 @@ num_rows = 0
 num_cols = 0
 z_noise_offset = 0
 grid_scale_factor = .2
-lines_per_render = 1000
+lines_per_render = 100
 left_x, right_x, top_y, bottom_y = [0]*4
 starting_num_lines = 0
-line_length = 500
-max_lines_number = 100000
+line_length = 50
+max_lines_number = 10000
 lines = {}
 resolution_factor = .01
 particle_manager = FlowParticleFactory(max_lines=max_lines_number)
@@ -34,7 +35,7 @@ def setup():
     angle_grid = [[0 for x in range(num_cols)] for y in range(num_rows)]
 
     # lines = { idx: FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length) for idx in range(starting_num_lines)}
-    particle_manager.spawn_new_particles(quantity=10000, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
+    # particle_manager.spawn_new_particles(quantity=10000, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
 
     print("LEFT X: {}".format(left_x))
     print("RIGHT X: {}".format(right_x))
@@ -56,12 +57,26 @@ def setup():
             x_noise_offset += noise_step
         y_noise_offset += noise_step
 
+    noLoop()
+
 
 def draw():
     global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines_per_render, line_length, max_lines_number, particle_manager
+    print(height)
+    print(width)
+    # fill(244, 157, 110)
+    # circle(50, 50, 3)
+    
+    # Visualize Grid
+    noStroke()
+    for x in range(0, width):
+        for y in range(0, height):
+            color = EmotionalColorPalette.determine_color_from_position(x, y)
+            fill(color[0], color[1], color[2])
+            circle(x, y, 3)
 
-    # Visualize FlowField
-    visualize_flow_field(angle_grid, num_rows, num_cols, resolution)
+    # Spawn ambient background lines
+    # particle_manager.spawn_new_particles(quantity=lines_per_render, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
 
     # Particle Lifecyle Management
-    particle_manager.iterate(angle_grid, resolution, left_x, top_y) 
+    # particle_manager.iterate(angle_grid, resolution, left_x, top_y) 

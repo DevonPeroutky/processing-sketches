@@ -7,6 +7,7 @@ class FlowParticleFactory:
         self.max_lines = max_lines
 
     def iterate(self, angle_grid, resolution, left_x, top_y):
+        strokeWeight(.8)
         for (key, particle) in self.particles.items():
             if particle.is_finished(left_x, top_y):
                 self.particles.pop(key)
@@ -68,12 +69,14 @@ class FlowParticleFactory:
                 y_offset = random.randint(int(round(-face_height / 4)), int(round(face_height / 4)))
                 particle = FlowParticle(x=particle_x + x_offset, y=particle_y + y_offset, starting_velocity=starting_velocity, max_speed=max_speed, emotion=emotion, max_length=max_length)
 
-                # TODO: CHANGE THIS KEY nonsense
-                line_key = random.randint(0, 999999999)
+                line_key = "{}-{}".format(frameCount, i)
                 self.particles[line_key] = particle
 
     def spawn_new_particles(self, quantity, left_x, right_x, top_y, bottom_y, line_length, emotion):
-        for _ in range(1, quantity+1):
-            if (len(self.particles.keys()) < self.max_lines):
-                line_key = random.randint(0, 999999999)
-                self.particles[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), starting_velocity=1, max_speed=2, emotion=emotion, max_length=random.randint(0, line_length))
+        particles_to_create = max(0, self.max_lines - len(self.particles.keys()))
+        frozenFrameCount = frameCount
+        print("PARTS TO MAKE {}".format(particles_to_create))
+
+        for i in range(1, min(quantity+1, particles_to_create)):
+            line_key = "{}-{}".format(frozenFrameCount, i)
+            self.particles[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), starting_velocity=1, max_speed=2, emotion=emotion, max_length=random.randint(0, line_length))

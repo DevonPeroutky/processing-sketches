@@ -37,7 +37,7 @@ num_rows = 0
 num_cols = 0
 z_noise_offset = 0
 grid_scale_factor = .2
-lines_per_render = 1000
+lines_per_render = 100
 left_x, right_x, top_y, bottom_y = [0]*4
 starting_num_lines = 0
 line_length = 500
@@ -64,8 +64,7 @@ def setup():
     num_rows = int((bottom_y - top_y) / resolution)
     angle_grid = [[0 for x in range(num_cols)] for y in range(num_rows)]
 
-    # lines = { idx: FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length) for idx in range(starting_num_lines)}
-    particle_manager.spawn_new_particles(quantity=10000, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
+    particle_manager.spawn_new_particles(quantity=5000, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
 
     print("LEFT X: {}".format(left_x))
     print("RIGHT X: {}".format(right_x))
@@ -95,7 +94,7 @@ def draw():
     # visualize_flow_field(angle_grid, num_rows, num_cols, resolution)
 
     # Spawn ambient background lines
-    # particle_manager.spawn_new_lines(quantity=lines_per_render, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
+    particle_manager.spawn_new_particles(quantity=lines_per_render, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
 
     # Particle Lifecyle Management
     particle_manager.iterate(angle_grid, resolution, left_x, top_y) 
@@ -103,7 +102,8 @@ def draw():
     # For a dynamic Flow Field
     # z_noise_offset += z_noise_step
 
-    print(frameRate)
+    # print(len(particle_manager.particles))
+    print("{} - {}".format(frameRate, len(particle_manager.particles.keys())))
 
 def grab_emotional_parameters():
     FIFO = "/tmp/EMOTIONAL_PIPE"

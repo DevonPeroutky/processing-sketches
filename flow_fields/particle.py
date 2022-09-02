@@ -8,6 +8,7 @@ Variables
     - Opacity of lines          <-- Decay over Time
 """
 
+from random import randint
 from emotional_color_palette import EmotionalColorPalette
 
 class FlowParticle:
@@ -16,12 +17,12 @@ class FlowParticle:
         self.pos = PVector(x, y)
 
         self.velocity = PVector(0, 0)
-        # self.acc = PVector(0, 0)
         self.emotion = emotion
         self.max_speed = max_speed
         self.length = 0
-
         self.prev_pos = self.pos.copy()
+        self.color = EmotionalColorPalette.determine_color_from_emotion(self.emotion)
+        # self.color = EmotionalColorPalette.determine_color_from_position(self.pos.x, self.pos.y)
 
     def __str__(self):
         return "Position ({}, {}) Velocity: {}, Emotion: {}".format(self.pos.x, self.pos.y, self.velocity.mag())
@@ -44,9 +45,9 @@ class FlowParticle:
         self.pos.add(self.velocity)
 
         # Draw
-        (red_value, green_value, blue_value) = EmotionalColorPalette.determine_color_from_emotion(self.emotion)
-        stroke(red_value, green_value, blue_value);
-        strokeWeight(.3)
+        # (red_value, green_value, blue_value) = EmotionalColorPalette.determine_color_from_emotion(self.emotion)
+        # (red_value, green_value, blue_value) = EmotionalColorPalette.determine_color_from_position(self.pos.x, self.pos.y)
+        stroke(self.color[0], self.color[1], self.color[2])
         line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
 
         # Update
@@ -63,3 +64,9 @@ class FlowParticle:
         x_pos = self.pos.x - left_x
         y_pos = self.pos.y - top_y
         return x_pos < left_x or x_pos > width - left_x or y_pos < top_y or y_pos > height - top_y
+
+    def reset(self, left_x, top_y):
+        self.pos = PVector(randint(left_x, width - left_x), randint(top_y, height - top_y))
+        self.length = 0
+        self.prev_pos = self.pos.copy()
+
