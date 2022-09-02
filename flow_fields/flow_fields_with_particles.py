@@ -27,12 +27,8 @@ sys.path.append('/Users/devonperoutky/Development/processing/utilities')
 sys.path.append('/Users/devonperoutky/Development/processing/utilities/unix_pipes')
 
 from flow_particle_factory import FlowParticleFactory
-from utils import draw_vector, visualize_flow_field
+from utils import visualize_flow_field
 from reader import UnixPipeReader
-from shape import FlowLine
-from particle import FlowParticle
-from flow_line import FlowCurve
-import random
 
 noise_step = .03
 z_noise_step = 0
@@ -99,20 +95,11 @@ def draw():
 
     # Spawn ambient background lines
     particle_manager.spawn_new_lines(quantity=lines_per_render, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
-    # for _ in range(1, lines_per_render+1):
-    #     if (len(lines.keys()) < max_lines_number):
-    #         line_key = random.randint(0, 999999999)
-    #         lines[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), starting_velocity=1, max_speed=2, emotion="neutral", max_length=random.randint(0, line_length))
 
-    # FlowLine Management
+    # Particle Lifecyle Management
     particle_manager.iterate(angle_grid, resolution, left_x, top_y) 
-    # for (key, line) in lines.items():
-    #     if line.is_finished(left_x, top_y):
-    #         lines.pop(key)
-    #     else:
-    #         line.iterate(angle_grid, resolution, left_x, top_y)
-    print(len(particle_manager.particles.keys()))
 
+    # For a dynamic Flow Field
     z_noise_offset += z_noise_step
 
 def grab_emotional_parameters():
@@ -122,5 +109,5 @@ def grab_emotional_parameters():
 def update_configuration_from_emotions(emotions):
     global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager
 
-    # for emotion in emotions:
-    #     particle_manager.generate_particles_from_emotion_payload(emotion)
+    for emotion in emotions:
+        particle_manager.generate_particles_from_emotion_payload(emotion)

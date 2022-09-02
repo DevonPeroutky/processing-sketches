@@ -58,7 +58,7 @@ class FlowParticleFactory:
         max_speed = random.randint(2, 4)
         starting_velocity = random.randint(1, 2)
 
-        particles_to_instantiate = [(emotion, int(round(value))) for emotion, value in emotion.items()]
+        particles_to_instantiate = [(emotion, int(round(value))) for emotion, value in emotion.items() if value > .5]
         for (emotion, quantity) in particles_to_instantiate:
             print("Creating {} {} particles at ({}, {})".format(quantity, emotion, particle_x, particle_y))
             for _ in range(0, quantity):
