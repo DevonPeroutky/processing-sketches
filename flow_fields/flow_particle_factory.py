@@ -72,7 +72,7 @@ class FlowParticleFactory:
                 line_key = random.randint(0, 999999999)
                 self.particles[line_key] = particle
 
-    def spawn_new_lines(self, quantity, left_x, right_x, top_y, bottom_y, line_length, emotion):
+    def spawn_new_particles(self, quantity, left_x, right_x, top_y, bottom_y, line_length, emotion):
         for _ in range(1, quantity+1):
             if (len(self.particles.keys()) < self.max_lines):
                 line_key = random.randint(0, 999999999)

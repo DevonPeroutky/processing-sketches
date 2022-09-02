@@ -12,4 +12,3 @@ class EmotionalColorPalette:
     @staticmethod
     def determine_color_from_emotion(emotion):
         return emotional_palette.get(emotion) or emotional_palette.get("neutral")
-    
