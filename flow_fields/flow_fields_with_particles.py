@@ -48,9 +48,10 @@ line_length = 50
 max_lines_number = 100000
 lines = {}
 resolution_factor = .01
+particle_manager = FlowParticleFactory(max_lines=max_lines_number)
 
 def setup():
-    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines, line_length
+    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager
     size(1000, 1000)
     background(255)
     smooth()
@@ -67,7 +68,7 @@ def setup():
     num_rows = int((bottom_y - top_y) / resolution)
     angle_grid = [[0 for x in range(num_cols)] for y in range(num_rows)]
 
-    lines = { idx: FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length) for idx in range(starting_num_lines)}
+    # lines = { idx: FlowLine(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), color=0, max_length=line_length) for idx in range(starting_num_lines)}
 
     print("LEFT X: {}".format(left_x))
     print("RIGHT X: {}".format(right_x))
@@ -81,7 +82,7 @@ def setup():
 
 
 def draw():
-    global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines, lines_per_render, line_length, max_lines_number
+    global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines_per_render, line_length, max_lines_number, particle_manager
 
     # Calculate Angle Grid
     y_noise_offset = 0
@@ -96,18 +97,21 @@ def draw():
     # Visualize FlowField
     # visualize_flow_field(angle_grid, num_rows, num_cols, resolution)
 
-    # Spawn new lines
+    # Spawn ambient background lines
+    particle_manager.spawn_new_lines(quantity=lines_per_render, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
     # for _ in range(1, lines_per_render+1):
     #     if (len(lines.keys()) < max_lines_number):
     #         line_key = random.randint(0, 999999999)
     #         lines[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), starting_velocity=1, max_speed=2, emotion="neutral", max_length=random.randint(0, line_length))
 
     # FlowLine Management
-    for (key, line) in lines.items():
-        if line.is_finished(left_x, top_y):
-            lines.pop(key)
-        else:
-            line.iterate(angle_grid, resolution, left_x, top_y)
+    particle_manager.iterate(angle_grid, resolution, left_x, top_y) 
+    # for (key, line) in lines.items():
+    #     if line.is_finished(left_x, top_y):
+    #         lines.pop(key)
+    #     else:
+    #         line.iterate(angle_grid, resolution, left_x, top_y)
+    print(len(particle_manager.particles.keys()))
 
     z_noise_offset += z_noise_step
 
@@ -116,13 +120,7 @@ def grab_emotional_parameters():
     UnixPipeReader().open_json_pipe(FIFO, update_configuration_from_emotions)
 
 def update_configuration_from_emotions(emotions):
-    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines, line_length
+    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager
 
-    for emotion in emotions:
-        particles = FlowParticleFactory.generate_particles_from_emotion_payload(emotion)
-        print("Adding {} new particles".format(len(particles)))
-        for particle in particles:
-            # CHANGE THIS
-            line_key = random.randint(0, 999999999)
-            lines[line_key] = particle
-        
+    # for emotion in emotions:
+    #     particle_manager.generate_particles_from_emotion_payload(emotion)

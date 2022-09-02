@@ -12,12 +12,22 @@ emotional_palette = {
 }
 
 class FlowParticleFactory:
+    def __init__(self, max_lines):
+        self.particles = {}
+        self.max_lines = max_lines
+
+    def iterate(self, angle_grid, resolution, left_x, top_y):
+        for (key, particle) in self.particles.items():
+            if particle.is_finished(left_x, top_y):
+                self.particles.pop(key)
+            else:
+                particle.iterate(angle_grid, resolution, left_x, top_y)
+
     @staticmethod
     def determine_color_from_emotion(emotion):
         return emotional_palette.get(emotion) or emotional_palette.get("neutral")
     
-    @staticmethod
-    def generate_particles_from_emotion_payload(payload):
+    def generate_particles_from_emotion_payload(self, payload):
         """
         Example Payload:
         {
@@ -63,7 +73,6 @@ class FlowParticleFactory:
         starting_velocity = random.randint(1, 2)
 
         particles_to_instantiate = [(emotion, int(round(value))) for emotion, value in emotion.items()]
-        particles = []
         for (emotion, quantity) in particles_to_instantiate:
             print("Creating {} {} particles at ({}, {})".format(quantity, emotion, particle_x, particle_y))
             for _ in range(0, quantity):
@@ -72,6 +81,13 @@ class FlowParticleFactory:
                 x_offset = random.randint(int(round(-face_width / 4)), int(round(face_width / 4)))
                 y_offset = random.randint(int(round(-face_height / 4)), int(round(face_height / 4)))
                 particle = FlowParticle(x=particle_x + x_offset, y=particle_y + y_offset, starting_velocity=starting_velocity, max_speed=max_speed, emotion=emotion, max_length=max_length)
-                particles.append(particle)
 
-        return particles
+                # TODO: CHANGE THIS KEY nonsense
+                line_key = random.randint(0, 999999999)
+                self.particles[line_key] = particle
+
+    def spawn_new_lines(self, quantity, left_x, right_x, top_y, bottom_y, line_length, emotion):
+        for _ in range(1, quantity+1):
+            if (len(self.particles.keys()) < self.max_lines):
+                line_key = random.randint(0, 999999999)
+                self.particles[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), starting_velocity=1, max_speed=2, emotion=emotion, max_length=random.randint(0, line_length))
