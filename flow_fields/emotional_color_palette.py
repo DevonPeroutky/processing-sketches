@@ -3,7 +3,8 @@ import random
 emotional_palette = {
     "surprise": (141, 170, 157), # TEAL-ISH
     "happy": (52, 98, 63),       # GREEN
-    "neutral": (242, 213, 248),  # GRAY
+    "neutral": (0, 0, 0),        # GRAY
+    # "neutral": (242, 213, 248),# GRAY
     "angry": (246, 16, 103),     # RED
     "sad": (51, 101, 138),       # BLUE
     "disgust": (82, 43, 71),     # PURPLE

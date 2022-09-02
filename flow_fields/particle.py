@@ -8,22 +8,22 @@ Variables
     - Opacity of lines          <-- Decay over Time
 """
 
-from random import randint
+from random import randint, random
 from emotional_color_palette import EmotionalColorPalette
 
 class FlowParticle:
-    def __init__(self, x, y, starting_velocity, max_speed, max_length, emotion):
+    def __init__(self, x, y, max_length, emotion, sensitivity=1, starting_velocity=2, max_speed=3):
         self.max_length = max_length
         self.pos = PVector(x, y)
 
         self.velocity = PVector(0, 0)
+        self.sensitivity = sensitivity
         self.emotion = emotion
         self.max_speed = max_speed
         self.length = 0
         self.prev_pos = self.pos.copy()
         self.color = EmotionalColorPalette.determine_color_from_emotion(self.emotion)
         # self.color = EmotionalColorPalette.determine_color_from_position(self.pos.x, self.pos.y)
-
         # self.velocity.setMag(starting_velocity)
 
 
@@ -41,6 +41,11 @@ class FlowParticle:
         column_index = max(0, column_index) if column_index < len(angle_grid[row_index]) else len(angle_grid[row_index]) - 1
         grid_angle = angle_grid[row_index][column_index]
         flow_field_force = PVector.fromAngle(grid_angle)
+        flow_field_force.mult(self.sensitivity)
+
+        # TESTING
+        # color = self.color if random() < .95 else (255, 255, 255)
+        color = self.color
 
         # Apply Accelaration
         self.velocity.add(flow_field_force)
@@ -48,9 +53,7 @@ class FlowParticle:
         self.pos.add(self.velocity)
 
         # Draw
-        # (red_value, green_value, blue_value) = EmotionalColorPalette.determine_color_from_emotion(self.emotion)
-        # (red_value, green_value, blue_value) = EmotionalColorPalette.determine_color_from_position(self.pos.x, self.pos.y)
-        stroke(self.color[0], self.color[1], self.color[2])
+        stroke(color[0], color[1], color[2])
         line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
 
         # Update

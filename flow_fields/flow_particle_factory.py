@@ -79,3 +79,15 @@ class FlowParticleFactory:
         for i in range(0, min(quantity, particles_to_create)):
             line_key = "{}-{}".format(frozenFrameCount, i)
             self.particles[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), starting_velocity=2, max_speed=2, emotion=emotion, max_length=random.randint(0, line_length))
+
+    def spawn_new_reed_groups(self, reed_width, reed_quantity, left_x, top_y, line_length, emotion):
+        group_y = random.randint(top_y, height - top_y) 
+        group_x = random.randint(left_x, width - left_x) 
+        length = line_length
+        for j in range(0, reed_quantity):
+            y = group_y + random.randint(0, reed_width)
+            x = group_x + random.randint(0, reed_width)
+            sensitivity = random.randint(1, 1000)
+            line_key = "{}-{}".format(frameCount, j)
+            self.particles[line_key] = FlowParticle(x=x, y=y, sensitivity=sensitivity, starting_velocity=2, max_speed=5, emotion=emotion, max_length=length)
+
