@@ -9,19 +9,20 @@ Variables
 """
 
 class FlowParticle:
-    def __init__(self, x, y, max_speed, color, max_length):
+    def __init__(self, x, y, starting_velocity, max_speed, max_length, emotion):
         self.max_length = max_length
         self.pos = PVector(x, y)
+
         self.velocity = PVector(0, 0)
         self.acc = PVector(0, 0)
-        self.color = color
+        self.emotion = emotion
         self.max_speed = max_speed
         self.length = 0
 
         self.prev_pos = self.pos.copy()
 
     def __str__(self):
-        return "Position ({}, {}) Velocity: {}, Color: {}".format(self.pos.x, self.pos.y, self.velocity.mag(), self.color)
+        return "Position ({}, {}) Velocity: {}, Emotion: {}".format(self.pos.x, self.pos.y, self.velocity.mag())
 
     def iterate(self, angle_grid, resolution, left_x, top_y):
 
@@ -47,7 +48,6 @@ class FlowParticle:
         self.acc.mult(0)
 
         # Draw
-        # stroke(self.color)
         stroke(199, 13, 58, 80);
         strokeWeight(.3)
         line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
