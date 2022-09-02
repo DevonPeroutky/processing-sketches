@@ -24,6 +24,9 @@ class FlowParticle:
         self.color = EmotionalColorPalette.determine_color_from_emotion(self.emotion)
         # self.color = EmotionalColorPalette.determine_color_from_position(self.pos.x, self.pos.y)
 
+        # self.velocity.setMag(starting_velocity)
+
+
     def __str__(self):
         return "Position ({}, {}) Velocity: {}, Emotion: {}".format(self.pos.x, self.pos.y, self.velocity.mag())
 

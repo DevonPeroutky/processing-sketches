@@ -7,7 +7,7 @@ class FlowParticleFactory:
         self.max_lines = max_lines
 
     def iterate(self, angle_grid, resolution, left_x, top_y):
-        strokeWeight(.8)
+        strokeWeight(.6)
         for (key, particle) in self.particles.items():
             if particle.is_finished(left_x, top_y):
                 self.particles.pop(key)
@@ -75,8 +75,7 @@ class FlowParticleFactory:
     def spawn_new_particles(self, quantity, left_x, right_x, top_y, bottom_y, line_length, emotion):
         particles_to_create = max(0, self.max_lines - len(self.particles.keys()))
         frozenFrameCount = frameCount
-        print("PARTS TO MAKE {}".format(particles_to_create))
 
-        for i in range(1, min(quantity+1, particles_to_create)):
+        for i in range(0, min(quantity, particles_to_create)):
             line_key = "{}-{}".format(frozenFrameCount, i)
-            self.particles[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), starting_velocity=1, max_speed=2, emotion=emotion, max_length=random.randint(0, line_length))
+            self.particles[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), starting_velocity=2, max_speed=2, emotion=emotion, max_length=random.randint(0, line_length))

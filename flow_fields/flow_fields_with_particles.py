@@ -39,15 +39,15 @@ z_noise_offset = 0
 grid_scale_factor = .2
 lines_per_render = 100
 left_x, right_x, top_y, bottom_y = [0]*4
-starting_num_lines = 0
+starting_num_lines = 10000
 line_length = 500
-max_lines_number = 100000
+max_lines_number = 20000
 lines = {}
 resolution_factor = .01
 particle_manager = FlowParticleFactory(max_lines=max_lines_number)
 
 def setup():
-    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager
+    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager, starting_num_lines
     size(1000, 1000)
     background(255)
     smooth()
@@ -64,7 +64,7 @@ def setup():
     num_rows = int((bottom_y - top_y) / resolution)
     angle_grid = [[0 for x in range(num_cols)] for y in range(num_rows)]
 
-    particle_manager.spawn_new_particles(quantity=5000, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
+    particle_manager.spawn_new_particles(quantity=starting_num_lines, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
 
     print("LEFT X: {}".format(left_x))
     print("RIGHT X: {}".format(right_x))
@@ -94,7 +94,7 @@ def draw():
     # visualize_flow_field(angle_grid, num_rows, num_cols, resolution)
 
     # Spawn ambient background lines
-    particle_manager.spawn_new_particles(quantity=lines_per_render, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
+    # particle_manager.spawn_new_particles(quantity=lines_per_render, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
 
     # Particle Lifecyle Management
     particle_manager.iterate(angle_grid, resolution, left_x, top_y) 
@@ -102,7 +102,6 @@ def draw():
     # For a dynamic Flow Field
     # z_noise_offset += z_noise_step
 
-    # print(len(particle_manager.particles))
     print("{} - {}".format(frameRate, len(particle_manager.particles.keys())))
 
 def grab_emotional_parameters():
