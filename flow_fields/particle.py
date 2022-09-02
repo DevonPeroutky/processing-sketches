@@ -8,6 +8,8 @@ Variables
     - Opacity of lines          <-- Decay over Time
 """
 
+from emotional_color_palette import EmotionalColorPalette
+
 class FlowParticle:
     def __init__(self, x, y, starting_velocity, max_speed, max_length, emotion):
         self.max_length = max_length
@@ -48,7 +50,8 @@ class FlowParticle:
         self.acc.mult(0)
 
         # Draw
-        stroke(199, 13, 58, 80);
+        (red_value, green_value, blue_value) = EmotionalColorPalette.determine_color_from_emotion(self.emotion)
+        stroke(red_value, green_value, blue_value, 60);
         strokeWeight(.3)
         line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
 

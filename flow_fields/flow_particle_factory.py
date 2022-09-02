@@ -1,15 +1,5 @@
 import random
 from particle import FlowParticle
-  
-emotional_palette = {
-    "surprise": color(141, 170, 157),  # DONE: TEAL-ISH
-    "happy": color(52, 98, 63),     # DONE: GREEN
-    "neutral": color(242, 213, 248),   # DONE: GRAY
-    "angry": color(246, 16, 103),     # DONE: RED
-    "sad": color(51, 101, 138),       # DONE: BLUE
-    "disgust": color(82, 43, 71),   # DONE: PURPLE
-    "fear": color(244, 157, 110),      # DONE: ORANGE
-}
 
 class FlowParticleFactory:
     def __init__(self, max_lines):
@@ -23,10 +13,6 @@ class FlowParticleFactory:
             else:
                 particle.iterate(angle_grid, resolution, left_x, top_y)
 
-    @staticmethod
-    def determine_color_from_emotion(emotion):
-        return emotional_palette.get(emotion) or emotional_palette.get("neutral")
-    
     def generate_particles_from_emotion_payload(self, payload):
         """
         Example Payload:
