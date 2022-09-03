@@ -19,9 +19,8 @@ class EmotionalColorPalette:
 
     @staticmethod
     def determine_color_from_position(x, y):
-        rando = random.randint(0, y)
-        index = int(round(map(rando, 0, height, 0, 6)))
-        if index == 0:
+        index = int(round(map(y, 0, height, 0, 6)))
+        if index <= 0:
             return emotional_palette.get("surprise")
         if index == 1:
             return emotional_palette.get("happy")

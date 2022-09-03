@@ -69,25 +69,22 @@ class FlowParticleFactory:
                 y_offset = random.randint(int(round(-face_height / 4)), int(round(face_height / 4)))
                 particle = FlowParticle(x=particle_x + x_offset, y=particle_y + y_offset, starting_velocity=starting_velocity, max_speed=max_speed, emotion=emotion, max_length=max_length)
 
-                line_key = "{}-{}".format(frameCount, i)
-                self.particles[line_key] = particle
+                self.particles[id(particle)] = particle
 
     def spawn_new_particles(self, quantity, left_x, right_x, top_y, bottom_y, line_length, emotion):
         particles_to_create = max(0, self.max_lines - len(self.particles.keys()))
-        frozenFrameCount = frameCount
 
-        for i in range(0, min(quantity, particles_to_create)):
-            line_key = "{}-{}".format(frozenFrameCount, i)
-            self.particles[line_key] = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), starting_velocity=2, max_speed=2, emotion=emotion, max_length=random.randint(0, line_length))
+        for _ in range(0, min(quantity, particles_to_create)):
+            particle = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), starting_velocity=2, max_speed=2, emotion=emotion, max_length=random.randint(0, line_length))
+            self.particles[id(particle)] = particle
 
     def spawn_new_reed_groups(self, reed_width, reed_quantity, left_x, top_y, line_length, emotion):
         group_y = random.randint(top_y, height - top_y) 
         group_x = random.randint(left_x, width - left_x) 
         length = line_length
-        for j in range(0, reed_quantity):
+        for _ in range(0, reed_quantity):
             y = group_y + random.randint(0, reed_width)
             x = group_x + random.randint(0, reed_width)
             sensitivity = random.randint(1, 1000)
-            line_key = "{}-{}".format(frameCount, j)
-            self.particles[line_key] = FlowParticle(x=x, y=y, sensitivity=sensitivity, starting_velocity=2, max_speed=5, emotion=emotion, max_length=length)
-
+            particle = FlowParticle(x=x, y=y, sensitivity=sensitivity, starting_velocity=2, max_speed=5, emotion=emotion, max_length=length)
+            self.particles[id(particle)] = particle

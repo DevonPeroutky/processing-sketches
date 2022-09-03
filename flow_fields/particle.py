@@ -22,9 +22,14 @@ class FlowParticle:
         self.max_speed = max_speed
         self.length = 0
         self.prev_pos = self.pos.copy()
-        self.color = EmotionalColorPalette.determine_color_from_emotion(self.emotion)
+        self.color = self._determine_color(emotion=emotion, x=x, y=y)
         # self.color = EmotionalColorPalette.determine_color_from_position(self.pos.x, self.pos.y)
         # self.velocity.setMag(starting_velocity)
+
+    def _determine_color(self, emotion, x, y):
+        color_from_emotion = EmotionalColorPalette.determine_color_from_emotion(emotion)
+        color_from_position = EmotionalColorPalette.determine_color_from_position(x, y)
+        return color_from_position
 
 
     def __str__(self):
@@ -43,9 +48,6 @@ class FlowParticle:
         flow_field_force = PVector.fromAngle(grid_angle)
         flow_field_force.mult(self.sensitivity)
 
-        # TESTING
-        # color = self.color if random() < .95 else (255, 255, 255)
-        color = self.color
 
         # Apply Accelaration
         self.velocity.add(flow_field_force)
@@ -53,7 +55,7 @@ class FlowParticle:
         self.pos.add(self.velocity)
 
         # Draw
-        stroke(color[0], color[1], color[2])
+        stroke(self.color[0], self.color[1], self.color[2])
         line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
 
         # Update
@@ -61,11 +63,9 @@ class FlowParticle:
         self.prev_pos.y = self.pos.y
         self.length += self.velocity.mag()
 
-
     def is_finished(self, left_x, top_y):
         return self.is_out_of_bounds(left_x=left_x, top_y=top_y) or self.length > self.max_length
         
-
     def is_out_of_bounds(self, left_x, top_y):
         x_pos = self.pos.x - left_x
         y_pos = self.pos.y - top_y
