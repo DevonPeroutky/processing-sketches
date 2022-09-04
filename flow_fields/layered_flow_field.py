@@ -2,8 +2,8 @@ import sys
 sys.path.append('/Users/devonperoutky/Development/processing/utilities')
 sys.path.append('/Users/devonperoutky/Development/processing/utilities/unix_pipes')
 
-from flow_particle_factory import FlowParticleFactory
-from utils import visualize_flow_field
+from utilities.flow_particle_factory import FlowParticleFactory
+from utilities.utils import visualize_flow_field
 from reader import UnixPipeReader
 
 noise_step = .01

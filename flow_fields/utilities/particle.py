@@ -29,7 +29,8 @@ class FlowParticle:
     def _determine_color(self, emotion, x, y):
         color_from_emotion = EmotionalColorPalette.determine_color_from_emotion(emotion)
         color_from_position = EmotionalColorPalette.determine_color_from_position(x, y)
-        return color_from_position
+        color_from_gradient = EmotionalColorPalette.determine_color_from_gradient(x, y)
+        return color_from_gradient
 
 
     def __str__(self):
@@ -55,7 +56,10 @@ class FlowParticle:
         self.pos.add(self.velocity)
 
         # Draw
-        stroke(self.color[0], self.color[1], self.color[2])
+        # strokeCap(SQUARE)
+        strokeWeight(10)
+        # stroke(self.color[0], self.color[1], self.color[2], 10)
+        stroke(0,0,0, 10)
         line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
 
         # Update

@@ -20,6 +20,7 @@ particle_manager = FlowParticleFactory(max_lines=max_lines_number)
 
 def setup():
     global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager
+    colorMode(HSB, 360, 100, 100)
     size(1000, 1000)
     background(255)
     smooth()
@@ -71,9 +72,20 @@ def draw():
     noStroke()
     for x in range(0, width):
         for y in range(0, height):
-            color = EmotionalColorPalette.determine_color_from_position(x, y)
-            fill(color[0], color[1], color[2])
-            circle(x, y, 3)
+            # determine angle
+            x_offset = x - left_x
+            y_offset = y - top_y
+            column_index = int(x_offset / resolution)
+            row_index = int(y_offset / resolution)
+            row_index = max(0, row_index) if row_index < len(angle_grid) else len(angle_grid) - 1
+            column_index = max(0, column_index) if column_index < len(angle_grid[row_index]) else len(angle_grid[row_index]) - 1
+            grid_angle = angle_grid[row_index][column_index]
+
+            hue = noise(x) * 360
+            saturation = noise(y) * 100
+            fill(noise(grid_angle) * 360, 100, 100)
+            # fill(noise(grid_angle) * 360, 100, 100)
+            circle(x, y, 1)
 
     # Spawn ambient background lines
     # particle_manager.spawn_new_particles(quantity=lines_per_render, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
