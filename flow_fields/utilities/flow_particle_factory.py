@@ -2,17 +2,20 @@ import random
 from particle import FlowParticle
 
 class FlowParticleFactory:
-    def __init__(self, max_lines):
+    def __init__(self, max_lines, left_x, right_x, top_y, bottom_y):
         self.particles = {}
         self.max_lines = max_lines
+        self.left_x = left_x
+        self.right_x = right_x
+        self.top_y = top_y
+        self.bottom_y = bottom_y
 
-    def iterate(self, angle_grid, resolution, left_x, top_y):
-        strokeWeight(.6)
+    def iterate(self, angle_grid, resolution):
         for (key, particle) in self.particles.items():
-            if particle.is_finished(left_x, top_y):
+            if particle.is_finished(self.left_x, self.top_y):
                 self.particles.pop(key)
             else:
-                particle.iterate(angle_grid, resolution, left_x, top_y)
+                particle.iterate(angle_grid, resolution, self.left_x, self.top_y)
 
     def generate_particles_from_emotion_payload(self, payload):
         """
@@ -71,11 +74,20 @@ class FlowParticleFactory:
 
                 self.particles[id(particle)] = particle
 
-    def spawn_new_particles(self, quantity, left_x, right_x, top_y, bottom_y, line_length, emotion):
+    def build_layer_of_particles(self, quantity, line_length, emotion, stroke_weight, opacity, max_speed, starting_velocity):
         particles_to_create = max(0, self.max_lines - len(self.particles.keys()))
 
         for _ in range(0, min(quantity, particles_to_create)):
-            particle = FlowParticle(x=random.randint(left_x, right_x), y=random.randint(top_y, bottom_y), starting_velocity=2, max_speed=2, emotion=emotion, max_length=random.randint(0, line_length))
+            particle = FlowParticle(
+                x=random.randint(self.left_x, self.right_x),
+                y=random.randint(self.top_y, self.bottom_y),
+                starting_velocity=starting_velocity,
+                max_speed=max_speed,
+                emotion=emotion,
+                max_length=random.randint(0, line_length),
+                stroke_weight=stroke_weight,
+                opacity=opacity
+            )
             self.particles[id(particle)] = particle
 
     def spawn_new_reed_groups(self, reed_width, reed_quantity, left_x, top_y, line_length, emotion):

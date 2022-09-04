@@ -12,7 +12,7 @@ from random import randint, random
 from emotional_color_palette import EmotionalColorPalette
 
 class FlowParticle:
-    def __init__(self, x, y, max_length, emotion, sensitivity=1, starting_velocity=2, max_speed=3):
+    def __init__(self, x, y, max_length, emotion, sensitivity=1, starting_velocity=2, max_speed=3, stroke_weight=1, opacity=10):
         self.max_length = max_length
         self.pos = PVector(x, y)
 
@@ -22,15 +22,23 @@ class FlowParticle:
         self.max_speed = max_speed
         self.length = 0
         self.prev_pos = self.pos.copy()
+        self.stroke_weight = stroke_weight
+        self.opacity = opacity
         self.color = self._determine_color(emotion=emotion, x=x, y=y)
         # self.color = EmotionalColorPalette.determine_color_from_position(self.pos.x, self.pos.y)
         # self.velocity.setMag(starting_velocity)
 
     def _determine_color(self, emotion, x, y):
         color_from_emotion = EmotionalColorPalette.determine_color_from_emotion(emotion)
-        color_from_position = EmotionalColorPalette.determine_color_from_position(x, y)
-        color_from_gradient = EmotionalColorPalette.determine_color_from_gradient(x, y)
-        return color_from_gradient
+        # color_from_position = EmotionalColorPalette.determine_color_from_position(x, y)
+        # color_from_gradient = EmotionalColorPalette.determine_color_from_gradient(x, y)
+        return color_from_emotion
+
+    def draw(self):
+        # strokeCap(SQUARE)
+        strokeWeight(self.stroke_weight)
+        stroke(self.color[0], self.color[1], self.color[2], self.opacity)
+        line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
 
 
     def __str__(self):
@@ -56,11 +64,7 @@ class FlowParticle:
         self.pos.add(self.velocity)
 
         # Draw
-        # strokeCap(SQUARE)
-        strokeWeight(10)
-        # stroke(self.color[0], self.color[1], self.color[2], 10)
-        stroke(0,0,0, 10)
-        line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
+        self.draw()
 
         # Update
         self.prev_pos.x = self.pos.x

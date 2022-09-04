@@ -4,17 +4,28 @@ import random
 emotional_palette = {
     "neutral": (0, 0, 87),# GRAY
     "angry": (338, 95, 76),     # RED
-    "sad": (209, 66, 64),       # BLUE
-    "happy": (134, 47, 38),       # GREEN
-    "surprise": (153, 17, 67), # TEAL-ISH
-    "disgust": (317, 48, 32),     # PURPLE
-    "fear": (21, 55, 96),     # ORANGE
+    "sad": (209, 100, 64),       # BLUE
+    "happy": (134, 100, 38),       # GREEN
+    "surprise": (153, 100, 67), # TEAL-ISH
+    "disgust": (317, 100, 32),     # PURPLE
+    "fear": (21, 100, 96),     # ORANGE
+    # "black": (0, 0, 0),
+    # "white": (0, 0, 100),
 }
 
 class EmotionalColorPalette:
     @staticmethod
     def determine_color_from_emotion(emotion):
-        return emotional_palette.get(emotion) or emotional_palette.get("neutral")
+        color = emotional_palette.get(emotion)
+        assert color
+        return color
+
+    @staticmethod
+    def get_random_emotion():
+        keys = emotional_palette.keys()
+        index = random.randint(0, len(keys)-1)
+        random_emotion = keys[index]
+        return random_emotion
 
 
     @staticmethod

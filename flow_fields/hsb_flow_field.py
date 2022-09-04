@@ -9,14 +9,24 @@ num_rows = 0
 num_cols = 0
 z_noise_offset = 0
 grid_scale_factor = .2
-lines_per_render = 200
+lines_per_layer = 200
 left_x, right_x, top_y, bottom_y = [0]*4
 starting_num_lines = 0
-line_length = 50
+line_length = 500
 max_lines_number = 100000
 lines = {}
 resolution_factor = .01
-particle_manager = FlowParticleFactory(max_lines=max_lines_number)
+particle_manager = None
+
+def calculate_layer_parameters(frameCount, lines_per_layer, emotion, line_length):
+    stroke_weight = int(max(50 - (frameCount), 2))
+    # stroke_weight = 40
+    opacity = int(min((frameCount/3) + 1, 10))
+    opacity = 5
+    max_speed = 3
+    starting_velocity = 1
+    emotion = EmotionalColorPalette.get_random_emotion()
+    return (lines_per_layer, line_length, emotion, stroke_weight, opacity, max_speed, starting_velocity)
 
 def build_angle_grid(angle_grid, num_rows, num_cols, noise_step, z_noise_offset):
     print("Building the next angle grid with {} & {}" .format(noise_step, z_noise_offset))
@@ -35,7 +45,6 @@ def setup():
     size(1000, 1000)
 
     # Set background_color
-    background_color = EmotionalColorPalette.determine_color_from_emotion("neutral")
     background(0, 0, 100)
 
     # Set size of flow field to be bigger than the canvas for aesthetics
@@ -56,14 +65,23 @@ def setup():
     # Visualize FlowField
     # visualize_flow_field(angle_grid, num_rows, num_cols, resolution)
 
+    # Build ParticleManager
+    particle_manager = FlowParticleFactory(max_lines=max_lines_number, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y)
+
 
 def draw():
-    global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines_per_render, line_length, max_lines_number, particle_manager
+    global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines_per_layer, line_length, max_lines_number, particle_manager
     fill(360, 100, 100)
 
-    # 1. Generate the particles for this layer
-    particle_manager.spawn_new_particles(lines_per_render, left_x, right_x, top_y, bottom_y, line_length, "neutral")
+    if frameCount < 50:
 
-    # 2. Completely draw the particles
-    while particle_manager.particles:
-        particle_manager.iterate(angle_grid, resolution, left_x, top_y)
+        # 0. Generate parameters for this layer
+        parameters = calculate_layer_parameters(frameCount=frameCount, lines_per_layer=lines_per_layer, emotion="surprise", line_length=line_length)
+        print([str(p) for p in parameters])
+
+        # 1. Generate the particles for this layer
+        particle_manager.build_layer_of_particles(*parameters)
+
+    # 2. Completely draw the particles of the layer
+    # while particle_manager.particles:
+    particle_manager.iterate(angle_grid, resolution)
