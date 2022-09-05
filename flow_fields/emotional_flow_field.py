@@ -4,24 +4,18 @@ sys.path.append('/Users/devonperoutky/Development/processing/utilities/unix_pipe
 
 from utilities.emotional_color_palette import EmotionalColorPalette
 from utilities.flow_particle_factory import FlowParticleFactory
-from utilities.utils import visualize_flow_field
+from utilities.angle_grid import AngleGrid
 from reader import UnixPipeReader
 
-noise_step = .03
-z_noise_step = 0.005
-angle_grid = [[]]
-num_rows = 0
-num_cols = 0
-z_noise_offset = 0
-grid_scale_factor = .2
-lines_per_layer = 200
-left_x, right_x, top_y, bottom_y = [0]*4
-starting_num_lines = 0
-line_length = 500
-max_lines_number = 100000
-lines = {}
-resolution_factor = .01
+angle_grid = None
 particle_manager = None
+lines_per_layer = 200
+line_length = 500
+
+# REMOVE
+face_center_x = 0
+face_center_y = 0
+face_width = 0
 
 def calculate_layer_parameters_from_emotion(lines_per_layer, emotion, line_length):
     # stroke_weight = int(max(50 - (frameCount), 2))
@@ -33,70 +27,68 @@ def calculate_layer_parameters_from_emotion(lines_per_layer, emotion, line_lengt
     emotion = EmotionalColorPalette.get_random_emotion()
     return (lines_per_layer, line_length, emotion, stroke_weight, opacity, max_speed, starting_velocity)
 
-def build_angle_grid(angle_grid, num_rows, num_cols, noise_step, z_noise_offset):
-    print("Building the next angle grid with {} & {}" .format(noise_step, z_noise_offset))
-    y_noise_offset = 0
-    for row in range(0, num_rows):
-        x_noise_offset = 0
-        for col in range(0, num_cols):
-            angle = noise(x_noise_offset, y_noise_offset, z_noise_offset) * PI * 2
-            angle_grid[row][col] = angle
-            x_noise_offset += noise_step
-        y_noise_offset += noise_step
-
-
 def setup():
-    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager
+    global particle_manager, angle_grid
+
     colorMode(HSB, 360, 100, 100)
     size(1000, 1000)
 
+    # Read emotion_payload from pipe
     thread("grab_emotional_parameters")
+
+    # Constants
+    max_lines_number = 100000
+    grid_scale_factor = .2
+    resolution_factor = .01
+    noise_step = .03
+    z_noise_offset = 0
 
     # Set background_color
     background(0, 0, 100)
 
-    # Set size of flow field to be bigger than the canvas for aesthetics
-    left_x = int(width * (0-grid_scale_factor))
-    right_x = int(width * (1 + grid_scale_factor))
-    top_y = int(height * (0-grid_scale_factor))
-    bottom_y = int(height * (1+ grid_scale_factor))
-
-    # Calculate angle grid dimensions
-    resolution = int((right_x - left_x)  * resolution_factor)
-    num_cols = int((right_x - left_x) / resolution)
-    num_rows = int((bottom_y - top_y) / resolution)
-    angle_grid = [[0 for x in range(num_cols)] for y in range(num_rows)]
-
-    # Calculate angle grid
-    build_angle_grid(angle_grid, num_rows, num_cols, noise_step, z_noise_offset)
+    # Build AngleGrid
+    angle_grid = AngleGrid(width=width, height=height, grid_scale_factor=grid_scale_factor, resolution_factor=resolution_factor, z_noise_offset=z_noise_offset, noise_step=noise_step)
 
     # Visualize FlowField
-    # visualize_flow_field(angle_grid, num_rows, num_cols, resolution)
+    # angle_grid.visualize_flow_field()
 
     # Build ParticleManager
-    particle_manager = FlowParticleFactory(max_lines=max_lines_number, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y)
+    particle_manager = FlowParticleFactory(max_lines=max_lines_number, left_x=angle_grid.left_x, right_x=angle_grid.right_x, top_y=angle_grid.top_y, bottom_y=angle_grid.bottom_y)
 
 
 def draw():
-    global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines_per_layer, line_length, max_lines_number, particle_manager
-    
-    # Move particles through flow field
-    particle_manager.iterate(angle_grid, resolution) 
+    global particle_manager, angle_grid, face_center_y, face_center_x, face_width
 
-    # print(len(particle_manager.particles.keys()))
+    # DELETE ME
+    f_x = int(round(map(face_center_x, 1280, 0, 0, 1000)))
+    f_y = int(round(map(face_center_y, 0, 720, 0, 1000)))
+    background(0, 0, 100)
+    stroke(0,0,0, 100)
+    noFill()
+    circle(f_x, f_y, face_width)
+    fill(0, 0, 0)
+    text("{}, {}".format(f_x, f_y), f_x + face_width /2, f_y + face_width/2)
 
-    # Incrementally update flow field
-    # z_noise_offset += z_noise_step
-    # build_angle_grid(angle_grid, num_rows, num_cols, noise_step, z_noise_offset)
+    # z_noise_step = 0.005
+    particle_manager.iterate(angle_grid)
+
 
 def grab_emotional_parameters():
     FIFO = "/tmp/EMOTIONAL_PIPE"
     UnixPipeReader().open_json_pipe(FIFO, update_configuration_from_emotions)
 
 def update_configuration_from_emotions(emotions):
-    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager
+    global particle_manager, face_center_x, face_center_y, face_width
 
     if particle_manager:
         for emotion in emotions:
             # particle_manager.generate_layer_from_emotion_payload(emotion)
+            print("DOING ITTT")
             particle_manager.generate_particles_from_emotion_payload(emotion)
+
+            
+            face_location = emotion.get('region')
+            face_width = int(round(face_location['w']))
+            face_height = int(round(face_location['h']))
+            face_center_x = face_location['x']
+            face_center_y = face_location['y']
