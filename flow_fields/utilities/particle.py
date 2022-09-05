@@ -27,7 +27,7 @@ class FlowParticle:
         self.color = self._determine_color(emotion=emotion, x=x, y=y)
 
     def __str__(self):
-        return "Position ({}, {}) Angle: {}, Magnitude: {}, Velocity: {}, Emotion: {}".format(self.pos.x, self.pos.y, degrees(self.pos.heading()), self.pos.mag(), self.velocity.mag(), self.emotion)
+        return "Position ({}, {}) Angle: {}, Magnitude: {}, MAXSPEED: {}, Velocity: {}, Emotion: {}, LENGTH: {}".format(self.pos.x, self.pos.y, degrees(self.pos.heading()), self.pos.mag(), self.max_speed, self.velocity.mag(), self.emotion, self.length)
 
     def _is_out_of_bounds(self, left_x, top_y):
         x_pos = self.pos.x - left_x
@@ -47,6 +47,7 @@ class FlowParticle:
 
     def draw(self):
         # strokeCap(SQUARE)
+        print(self)
         strokeWeight(self.stroke_weight)
         stroke(self.color[0], self.color[1], self.color[2], self.opacity)
         circle(self.pos.x, self.pos.y, 1)

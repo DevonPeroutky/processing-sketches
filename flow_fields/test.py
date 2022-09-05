@@ -47,7 +47,5 @@ def draw():
 
     # Periodically spawn new particles (Every second? Based on capacity?)
 
-
-
     if frameCount < 50:
         particle.iterate(angle_grid)
