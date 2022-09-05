@@ -118,10 +118,10 @@ class FlowParticleFactory:
         particle_x = int(round(map(face_center_x, 1280, 0, 0, 1000)))
         particle_y = int(round(map(face_center_y, 0, 720, 0, 1000)))
 
-        # TODO: CHANGE THIS
-        max_length = 500
-        max_speed = random.randint(2, 4)
-        starting_velocity = random.randint(1, 2)
+        # TODO: CHANGE/VARY THESE
+        max_length = 1500
+        max_speed = random.randint(2, 10)
+        starting_velocity = random.randint(1, 5)
         creation_factor = .5
 
         particles_to_instantiate = [(emotion, int(round(value) * creation_factor)) for emotion, value in emotion.items() if value > .5 and emotion == dominant_emotion]
@@ -131,8 +131,8 @@ class FlowParticleFactory:
             for _ in range(0, quantity):
 
                 # Random distribute new particles in face box
-                x_offset = randomGaussian() * (face_width / 4)
-                y_offset = randomGaussian() * (face_height / 4)
+                x_offset = randomGaussian() * (face_width / 8)
+                y_offset = randomGaussian() * (face_height / 8)
                 particle = FlowParticle(
                     x=particle_x + x_offset,
                     y=particle_y + y_offset,

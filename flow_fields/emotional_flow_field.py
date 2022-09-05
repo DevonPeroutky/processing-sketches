@@ -2,6 +2,7 @@ import sys
 sys.path.append('/Users/devonperoutky/Development/processing/utilities')
 sys.path.append('/Users/devonperoutky/Development/processing/utilities/unix_pipes')
 
+from random import randint
 from utilities.emotional_color_palette import EmotionalColorPalette
 from utilities.flow_particle_factory import FlowParticleFactory
 from utilities.angle_grid import AngleGrid
@@ -9,13 +10,6 @@ from reader import UnixPipeReader
 
 angle_grid = None
 particle_manager = None
-lines_per_layer = 200
-line_length = 500
-
-# REMOVE
-face_center_x = 0
-face_center_y = 0
-face_width = 0
 
 def setup():
     global particle_manager, angle_grid
@@ -27,7 +21,7 @@ def setup():
     thread("grab_emotional_parameters")
 
     # Constants
-    max_lines_number = 100000
+    max_lines_number = 1000
     grid_scale_factor = .2
     resolution_factor = .01
     noise_step = .03
@@ -49,8 +43,17 @@ def setup():
 def draw():
     global particle_manager, angle_grid, face_center_y, face_center_x, face_width
 
-    # Constants
-    iterations_per_draw = 100
+    # Macro constants
+    iterations_per_draw = 10
+    max_additional_lines_per_draw = 100
+    
+    # Particle Constants
+    ambient_emotion = "neutral"
+    line_length = 1000
+    stroke_weight = 40
+    opacity = 4
+    max_speed = randint(1, 10)
+    starting_velocity = randint(2, 5)
 
     # DELETE ME
     # f_x = int(round(map(face_center_x, 1280, 0, 0, 1000)))
@@ -62,10 +65,23 @@ def draw():
     # fill(0, 0, 0)
     # text("{}, {}".format(f_x, f_y), f_x + face_width /2, f_y + face_width/2)
 
-    # z_noise_step = 0.005
     for _ in range(0, iterations_per_draw):
         particle_manager.iterate(angle_grid)
 
+    # Add in ambient particles
+    particle_manager.build_layer_of_particles(
+        quantity=max_additional_lines_per_draw,
+        line_length =line_length,
+        emotion=ambient_emotion,
+        stroke_weight=stroke_weight,
+        opacity=opacity,
+        max_speed=max_speed,
+        starting_velocity=starting_velocity
+    )
+    
+
+    # Slightly change the angle_grid overtime
+    # z_noise_step = 0.005
     
     print("{}-{}".format(len(particle_manager.particles.keys()), frameRate))
 
@@ -82,9 +98,8 @@ def update_configuration_from_emotions(emotions):
             # particle_manager.generate_layer_from_emotion_payload(emotion)
             particle_manager.generate_particles_from_emotion_payload(emotion)
 
-            
-            face_location = emotion.get('region')
-            face_width = int(round(face_location['w']))
-            face_height = int(round(face_location['h']))
-            face_center_x = face_location['x']
-            face_center_y = face_location['y']
+            # face_location = emotion.get('region')
+            # face_width = int(round(face_location['w']))
+            # face_height = int(round(face_location['h']))
+            # face_center_x = face_location['x']
+            # face_center_y = face_location['y']

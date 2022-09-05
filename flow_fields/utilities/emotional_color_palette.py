@@ -22,9 +22,11 @@ class EmotionalColorPalette:
 
     @staticmethod
     def get_random_emotion():
-        keys = emotional_palette.keys()
-        index = random.randint(0, len(keys)-1)
-        random_emotion = keys[index]
+        random_emotion = "neutral"
+        while random_emotion == "neutral":
+            keys = emotional_palette.keys()
+            index = random.randint(0, len(keys)-1)
+            random_emotion = keys[index]
         return random_emotion
 
 

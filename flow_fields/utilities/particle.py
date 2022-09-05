@@ -13,7 +13,7 @@ from random import randint, random
 from emotional_color_palette import EmotionalColorPalette
 
 class FlowParticle:
-    def __init__(self, x, y, max_length, emotion, starting_angle=None, sensitivity=1, starting_velocity=2, max_speed=3, stroke_weight=1, opacity=10):
+    def __init__(self, x, y, max_length, emotion, starting_angle=None, sensitivity=1, starting_velocity=2, max_speed=3, stroke_weight=1, opacity=10, color=None):
         self.max_length = max_length
         self.pos = PVector(x, y)
 
@@ -25,10 +25,11 @@ class FlowParticle:
         self.prev_pos = self.pos.copy()
         self.stroke_weight = stroke_weight
         self.opacity = opacity
-        self.color = self._determine_color(emotion=emotion, x=x, y=y)
+        self.color = color or self._determine_color(emotion=emotion, x=x, y=y)
 
         # Set starting_velocity in a random direction
-        starting_angle = starting_angle or random() * 6.28319 
+        # starting_angle = starting_angle or random() * 6.28319 
+        starting_angle = starting_angle or 0
         starting_velocity_vector = PVector.fromAngle(starting_angle)
         starting_velocity_vector.setMag(starting_velocity)
         self._apply_vector(starting_velocity_vector)
@@ -53,7 +54,7 @@ class FlowParticle:
         self.pos.add(self.velocity)
 
     def draw(self):
-        strokeCap(SQUARE)
+        # strokeCap(SQUARE)
         # print(self)
         strokeWeight(self.stroke_weight)
         stroke(self.color[0], self.color[1], self.color[2], self.opacity)
@@ -83,5 +84,6 @@ class FlowParticle:
     def reset(self, left_x, top_y):
         self.pos = PVector(randint(left_x, width - left_x), randint(top_y, height - top_y))
         self.length = 0
+        self.velocity.mult(0)
         self.prev_pos = self.pos.copy()
 
