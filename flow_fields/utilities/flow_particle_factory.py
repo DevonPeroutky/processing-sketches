@@ -41,8 +41,10 @@ class FlowParticleFactory:
         """
         emotion = payload.get('emotion')
         face_location = payload.get('region')
+        dominant_emotion = payload.get('dominant_emotion')
         assert face_location
         assert emotion
+        assert dominant_emotion
 
         # TODO: CHANGE THIS
         max_length = 500
@@ -54,15 +56,15 @@ class FlowParticleFactory:
 
         # Mapping the position of the face in the webcam to the corresponding position in the canvas
         # TODO. Send this info via the pipe instead of hardcoding it.
-        particle_x = int(round(map(face_center_x, 1275, 0, 0, 1000)))
-        particle_y = int(round(map(face_center_y, 720, 0, 0, 1000)))
+        particle_x = int(round(map(face_center_x, 1280, 0, 0, 1000)))
+        particle_y = int(round(map(face_center_y, 0, 720, 0, 1000)))
         print("Mapping ({}, {}) --> ({}, {})".format(face_center_x, face_center_y, particle_x, particle_y))
 
         # TODO: Make this better
         max_speed = random.randint(2, 4)
         starting_velocity = random.randint(1, 2)
 
-        particles_to_instantiate = [(emotion, int(round(value))) for emotion, value in emotion.items() if value > .5]
+        particles_to_instantiate = [(emotion, int(round(value))) for emotion, value in emotion.items() if value > .5 and emotion == dominant_emotion]
         for (emotion, quantity) in particles_to_instantiate:
             print("Creating {} {} particles at ({}, {})".format(quantity, emotion, particle_x, particle_y))
             for _ in range(0, quantity):
@@ -70,7 +72,16 @@ class FlowParticleFactory:
                 # Random distribute new particles in face box
                 x_offset = random.randint(int(round(-face_width / 4)), int(round(face_width / 4)))
                 y_offset = random.randint(int(round(-face_height / 4)), int(round(face_height / 4)))
-                particle = FlowParticle(x=particle_x + x_offset, y=particle_y + y_offset, starting_velocity=starting_velocity, max_speed=max_speed, emotion=emotion, max_length=max_length)
+                particle = FlowParticle(
+                    x=particle_x + x_offset,
+                    y=particle_y + y_offset,
+                    starting_velocity=starting_velocity,
+                    max_speed=max_speed,
+                    emotion=emotion,
+                    max_length=max_length,
+                    stroke_weight=10,
+                    opacity=2
+                )
 
                 self.particles[id(particle)] = particle
 
