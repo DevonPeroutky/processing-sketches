@@ -1,3 +1,6 @@
+from math import degrees
+
+
 class AngleGrid:
     def __init__(self, width, height, grid_scale_factor, resolution_factor, z_noise_offset, noise_step):
         # Set size of flow field to be bigger than the canvas for aesthetics
@@ -11,7 +14,7 @@ class AngleGrid:
         self.num_rows = int((self.bottom_y - self.top_y) / self.resolution)
 
         self.angle_grid = [[0 for x in range(self.num_cols)] for y in range(self.num_rows)]
-        self._build_angle_grid(z_noise_offset=z_noise_offset, noise_step=noise_step)
+        self.build_angle_grid(z_noise_offset=z_noise_offset, noise_step=noise_step)
         print(self)
 
     def __str__(self):
@@ -56,7 +59,7 @@ class AngleGrid:
         flow_field_force = PVector.fromAngle(grid_angle)
         return flow_field_force
     
-    def _build_angle_grid(self, z_noise_offset, noise_step):
+    def build_angle_grid(self, z_noise_offset, noise_step):
         y_noise_offset = 0
         for row in range(0, self.num_rows):
             x_noise_offset = 0
@@ -65,4 +68,10 @@ class AngleGrid:
                 self.angle_grid[row][col] = angle
                 x_noise_offset += noise_step
             y_noise_offset += noise_step
+    
+    def reverse_angle_grid(self):
+        for row in range(0, self.num_rows):
+            for col in range(0, self.num_cols):
+                inverse_angle = 180 + self.angle_grid[row][col]
+                self.angle_grid[row][col] = inverse_angle
 

@@ -21,15 +21,15 @@ class FlowParticle:
         self.sensitivity = sensitivity
         self.emotion = emotion
         self.max_speed = max_speed
-        self.length = 0
+        self.length = 0.0
         self.prev_pos = self.pos.copy()
         self.stroke_weight = stroke_weight
         self.opacity = opacity
         self.color = color or self._determine_color(emotion=emotion, x=x, y=y)
 
         # Set starting_velocity in a random direction
-        # starting_angle = starting_angle or random() * 6.28319 
-        starting_angle = starting_angle or 0
+        starting_angle = starting_angle or random() * 6.28319 
+        # starting_angle = starting_angle or 0
         starting_velocity_vector = PVector.fromAngle(starting_angle)
         starting_velocity_vector.setMag(starting_velocity)
         self._apply_vector(starting_velocity_vector)
@@ -40,7 +40,7 @@ class FlowParticle:
     def _is_out_of_bounds(self, left_x, top_y):
         x_pos = self.pos.x - left_x
         y_pos = self.pos.y - top_y
-        return x_pos < left_x or x_pos > width - left_x or y_pos < top_y or y_pos > height - top_y
+        return x_pos < 0 or x_pos > width - left_x - left_x or y_pos < 0 or y_pos > height - top_y
 
     def _determine_color(self, emotion, x, y):
         color_from_emotion = EmotionalColorPalette.determine_color_from_emotion(emotion)
@@ -54,9 +54,12 @@ class FlowParticle:
         self.pos.add(self.velocity)
 
     def draw(self):
-        # strokeCap(SQUARE)
-        # print(self)
-        strokeWeight(self.stroke_weight)
+        strokeCap(SQUARE)
+        # strokeWeight(self.stroke_weight)
+        noisy_stroke_weight = max(noise(self.length / self.max_length) * self.stroke_weight *2, 30)
+        # decay_weight = max((1 - (self.length / self.max_length)) * self.stroke_weight, 5)
+        print(self)
+        strokeWeight(noisy_stroke_weight)
         stroke(self.color[0], self.color[1], self.color[2], self.opacity)
         line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
 
