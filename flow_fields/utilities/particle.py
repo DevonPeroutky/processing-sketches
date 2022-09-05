@@ -53,7 +53,7 @@ class FlowParticle:
         self.pos.add(self.velocity)
 
     def draw(self):
-        # strokeCap(SQUARE)
+        strokeCap(SQUARE)
         # print(self)
         strokeWeight(self.stroke_weight)
         stroke(self.color[0], self.color[1], self.color[2], self.opacity)

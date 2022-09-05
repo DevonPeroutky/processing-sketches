@@ -21,9 +21,9 @@ def create_layer(frameCount, quantity, emotion, line_length):
     global particle_manager
 
     # stroke_weight = int(max(50 - (frameCount), 2))
-    stroke_weight = 40
+    stroke_weight = 20
     opacity = int(min((frameCount/3) + 1, 10))
-    opacity = 5
+    opacity = 2
     max_speed = randint(1, 10)
     starting_velocity = randint(2, 5)
     emotion = EmotionalColorPalette.get_random_emotion()
@@ -55,6 +55,7 @@ def setup():
     # Build ParticleManager
     particle_manager = FlowParticleFactory(max_lines=max_lines_number, left_x=angle_grid.left_x, right_x=angle_grid.right_x, top_y=angle_grid.top_y, bottom_y=angle_grid.bottom_y)
 
+    # Create Initial Layer
     create_layer(frameCount=100, quantity=2000, emotion="surprise", line_length=500)
 
 def draw():
