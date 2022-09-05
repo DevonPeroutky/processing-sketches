@@ -26,9 +26,6 @@ class FlowParticle:
         self.opacity = opacity
         self.color = self._determine_color(emotion=emotion, x=x, y=y)
 
-        print(self)
-
-
     def __str__(self):
         return "Position ({}, {}) Angle: {}, Magnitude: {}, Velocity: {}, Emotion: {}".format(self.pos.x, self.pos.y, degrees(self.pos.heading()), self.pos.mag(), self.velocity.mag(), self.emotion)
 
@@ -50,7 +47,6 @@ class FlowParticle:
 
     def draw(self):
         # strokeCap(SQUARE)
-        print("DRAWING {} degree, {} magnitude line from {}, {} ---> {},{}".format(degrees(self.pos.heading()), self.pos.mag(), self.prev_pos.x, self.prev_pos.y, self.pos.x, self.pos.y))
         strokeWeight(self.stroke_weight)
         stroke(self.color[0], self.color[1], self.color[2], self.opacity)
         circle(self.pos.x, self.pos.y, 1)

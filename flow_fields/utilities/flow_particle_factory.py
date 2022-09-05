@@ -107,44 +107,44 @@ class FlowParticleFactory:
         assert emotion
         assert dominant_emotion
 
-        # TODO: CHANGE THIS
-        max_length = 500
-
+        # Face Location
         face_width = int(round(face_location['w']))
         face_height = int(round(face_location['h']))
         face_center_x = face_location['x']
         face_center_y = face_location['y']
 
         # Mapping the position of the face in the webcam to the corresponding position in the canvas
-        # TODO. Send this info via the pipe instead of hardcoding it.
+        # TODO. Send the dimension via the pipe instead of hardcoding it.
         particle_x = int(round(map(face_center_x, 1280, 0, 0, 1000)))
         particle_y = int(round(map(face_center_y, 0, 720, 0, 1000)))
-        print("Mapping ({}, {}) --> ({}, {})".format(face_center_x, face_center_y, particle_x, particle_y))
 
-        # TODO: Make this better
+        # TODO: CHANGE THIS
+        max_length = 500
         max_speed = random.randint(2, 4)
         starting_velocity = random.randint(1, 2)
+        creation_factor = .5
 
-        # particles_to_instantiate = [(emotion, int(round(value))) for emotion, value in emotion.items() if value > .5 and emotion == dominant_emotion]
-        # for (emotion, quantity) in particles_to_instantiate:
-        #     print("Creating {} {} particles at ({}, {})".format(quantity, emotion, particle_x, particle_y))
-        #     for _ in range(0, quantity):
+        particles_to_instantiate = [(emotion, int(round(value) * creation_factor)) for emotion, value in emotion.items() if value > .5 and emotion == dominant_emotion]
+        for (emotion, quantity) in particles_to_instantiate:
+            print("Creating {} {} particles at ({}, {})".format(quantity, emotion, particle_x, particle_y))
+            # for _ in range(0, 2):
+            for _ in range(0, quantity):
 
-        #         # Random distribute new particles in face box
-        #         x_offset = randomGaussian() * (face_width / 4)
-        #         y_offset = randomGaussian() * (face_height / 4)
-        #         particle = FlowParticle(
-        #             x=particle_x + x_offset,
-        #             y=particle_y + y_offset,
-        #             starting_velocity=starting_velocity,
-        #             max_speed=max_speed,
-        #             emotion=emotion,
-        #             max_length=max_length,
-        #             stroke_weight=10,
-        #             opacity=2
-        #         )
+                # Random distribute new particles in face box
+                x_offset = randomGaussian() * (face_width / 4)
+                y_offset = randomGaussian() * (face_height / 4)
+                particle = FlowParticle(
+                    x=particle_x + x_offset,
+                    y=particle_y + y_offset,
+                    starting_velocity=starting_velocity,
+                    max_speed=max_speed,
+                    emotion=emotion,
+                    max_length=max_length,
+                    stroke_weight=10,
+                    opacity=2
+                )
 
-        #         self.particles[id(particle)] = particle
+                self.particles[id(particle)] = particle
 
     def build_layer_of_particles(self, quantity, line_length, emotion, stroke_weight, opacity, max_speed, starting_velocity):
         particles_to_create = max(0, self.max_lines - len(self.particles.keys()))

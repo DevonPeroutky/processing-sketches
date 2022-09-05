@@ -12,6 +12,7 @@ class AngleGrid:
 
         self.angle_grid = [[0 for x in range(self.num_cols)] for y in range(self.num_rows)]
         self._build_angle_grid(z_noise_offset=z_noise_offset, noise_step=noise_step)
+        print(self)
 
     def __str__(self):
         return "Angle Grid ({} x {}) w/resolution: {}, and offsets are {}, {}".format(self.num_rows, self.num_cols, self.resolution, self.left_x, self.top_y)

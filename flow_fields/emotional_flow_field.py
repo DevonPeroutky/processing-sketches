@@ -17,16 +17,6 @@ face_center_x = 0
 face_center_y = 0
 face_width = 0
 
-def calculate_layer_parameters_from_emotion(lines_per_layer, emotion, line_length):
-    # stroke_weight = int(max(50 - (frameCount), 2))
-    stroke_weight = 40
-    # opacity = int(min((frameCount/3) + 1, 10))
-    opacity = 5
-    max_speed = 3
-    starting_velocity = 1
-    emotion = EmotionalColorPalette.get_random_emotion()
-    return (lines_per_layer, line_length, emotion, stroke_weight, opacity, max_speed, starting_velocity)
-
 def setup():
     global particle_manager, angle_grid
 
@@ -59,18 +49,25 @@ def setup():
 def draw():
     global particle_manager, angle_grid, face_center_y, face_center_x, face_width
 
+    # Constants
+    iterations_per_draw = 100
+
     # DELETE ME
-    f_x = int(round(map(face_center_x, 1280, 0, 0, 1000)))
-    f_y = int(round(map(face_center_y, 0, 720, 0, 1000)))
-    background(0, 0, 100)
-    stroke(0,0,0, 100)
-    noFill()
-    circle(f_x, f_y, face_width)
-    fill(0, 0, 0)
-    text("{}, {}".format(f_x, f_y), f_x + face_width /2, f_y + face_width/2)
+    # f_x = int(round(map(face_center_x, 1280, 0, 0, 1000)))
+    # f_y = int(round(map(face_center_y, 0, 720, 0, 1000)))
+    # background(0, 0, 100)
+    # stroke(0,0,0, 100)
+    # noFill()
+    # circle(f_x, f_y, face_width)
+    # fill(0, 0, 0)
+    # text("{}, {}".format(f_x, f_y), f_x + face_width /2, f_y + face_width/2)
 
     # z_noise_step = 0.005
-    particle_manager.iterate(angle_grid)
+    for _ in range(0, iterations_per_draw):
+        particle_manager.iterate(angle_grid)
+
+    
+    print("{}-{}".format(len(particle_manager.particles.keys()), frameRate))
 
 
 def grab_emotional_parameters():
@@ -83,7 +80,6 @@ def update_configuration_from_emotions(emotions):
     if particle_manager:
         for emotion in emotions:
             # particle_manager.generate_layer_from_emotion_payload(emotion)
-            print("DOING ITTT")
             particle_manager.generate_particles_from_emotion_payload(emotion)
 
             
