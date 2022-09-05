@@ -16,9 +16,10 @@ max_lines_number = 100000
 lines = {}
 resolution_factor = .01
 particle_manager = None
+particles = []
 
 def setup():
-    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager, resolution, particle
+    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager, resolution, particle, particles
 
     colorMode(HSB, 360, 100, 100)
     size(1200, 1200)
@@ -29,23 +30,25 @@ def setup():
 
     # Visualize FlowField
     angle_grid.visualize_flow_field()
-    particle = FlowParticle(
-        x=500,
-        y=500,
-        sensitivity=10,
-        starting_velocity=1,
-        max_speed=1,
-        emotion="surprise",
-        max_length=500,
-        stroke_weight=3,
-        opacity=25
-    )
+    particles = [
+        FlowParticle(
+            x=500,
+            y=500,
+            sensitivity=10,
+            starting_velocity=i*5,
+            max_speed=500,
+            emotion="surprise",
+            max_length=1500,
+            stroke_weight=3,
+            opacity=100
+        )
+        for i in range(0, 10)
+    ]
     
 
 def draw():
-    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager, resolution, partcle
-
-    # Periodically spawn new particles (Every second? Based on capacity?)
+    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager, resolution, partcles
 
     if frameCount < 50:
-        particle.iterate(angle_grid)
+        for particle in particles:
+                particle.iterate(angle_grid)

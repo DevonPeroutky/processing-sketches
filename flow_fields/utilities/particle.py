@@ -8,11 +8,12 @@ Variables
     - Opacity of lines          <-- Decay over Time
 """
 
+from math import radians
 from random import randint, random
 from emotional_color_palette import EmotionalColorPalette
 
 class FlowParticle:
-    def __init__(self, x, y, max_length, emotion, sensitivity=1, starting_velocity=2, max_speed=3, stroke_weight=1, opacity=10):
+    def __init__(self, x, y, max_length, emotion, starting_angle=None, sensitivity=1, starting_velocity=2, max_speed=3, stroke_weight=1, opacity=10):
         self.max_length = max_length
         self.pos = PVector(x, y)
 
@@ -25,6 +26,12 @@ class FlowParticle:
         self.stroke_weight = stroke_weight
         self.opacity = opacity
         self.color = self._determine_color(emotion=emotion, x=x, y=y)
+
+        # Set starting_velocity in a random direction
+        starting_angle = starting_angle or random() * 6.28319 
+        starting_velocity_vector = PVector.fromAngle(starting_angle)
+        starting_velocity_vector.setMag(starting_velocity)
+        self._apply_vector(starting_velocity_vector)
 
     def __str__(self):
         return "Position ({}, {}) Angle: {}, Magnitude: {}, MAXSPEED: {}, Velocity: {}, Emotion: {}, LENGTH: {}".format(self.pos.x, self.pos.y, degrees(self.pos.heading()), self.pos.mag(), self.max_speed, self.velocity.mag(), self.emotion, self.length)
@@ -47,10 +54,9 @@ class FlowParticle:
 
     def draw(self):
         # strokeCap(SQUARE)
-        print(self)
+        # print(self)
         strokeWeight(self.stroke_weight)
         stroke(self.color[0], self.color[1], self.color[2], self.opacity)
-        circle(self.pos.x, self.pos.y, 1)
         line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
 
 
