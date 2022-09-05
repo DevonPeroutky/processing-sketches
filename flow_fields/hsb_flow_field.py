@@ -1,10 +1,10 @@
 from utilities.emotional_color_palette import EmotionalColorPalette
 from utilities.flow_particle_factory import FlowParticleFactory
-from utilities.utils import visualize_flow_field
+from utilities.angle_grid import AngleGrid
 
 noise_step = .03
 z_noise_step = 0
-angle_grid = [[]]
+angle_grid = None
 num_rows = 0
 num_cols = 0
 z_noise_offset = 0
@@ -19,8 +19,8 @@ resolution_factor = .01
 particle_manager = None
 
 def calculate_layer_parameters(frameCount, lines_per_layer, emotion, line_length):
-    stroke_weight = int(max(50 - (frameCount), 2))
-    # stroke_weight = 40
+    # stroke_weight = int(max(50 - (frameCount), 2))
+    stroke_weight = 40
     opacity = int(min((frameCount/3) + 1, 10))
     opacity = 5
     max_speed = 3
@@ -28,60 +28,36 @@ def calculate_layer_parameters(frameCount, lines_per_layer, emotion, line_length
     emotion = EmotionalColorPalette.get_random_emotion()
     return (lines_per_layer, line_length, emotion, stroke_weight, opacity, max_speed, starting_velocity)
 
-def build_angle_grid(angle_grid, num_rows, num_cols, noise_step, z_noise_offset):
-    print("Building the next angle grid with {} & {}" .format(noise_step, z_noise_offset))
-    y_noise_offset = 0
-    for row in range(0, num_rows):
-        x_noise_offset = 0
-        for col in range(0, num_cols):
-            angle = noise(x_noise_offset, y_noise_offset, z_noise_offset) * PI * 2
-            angle_grid[row][col] = angle
-            x_noise_offset += noise_step
-        y_noise_offset += noise_step
-
 def setup():
-    global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager
+    global angle_grid, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager
     colorMode(HSB, 360, 100, 100)
     size(1000, 1000)
 
     # Set background_color
     background(0, 0, 100)
 
-    # Set size of flow field to be bigger than the canvas for aesthetics
-    left_x = int(width * (0-grid_scale_factor))
-    right_x = int(width * (1 + grid_scale_factor))
-    top_y = int(height * (0-grid_scale_factor))
-    bottom_y = int(height * (1+ grid_scale_factor))
-
-    # Calculate angle grid dimensions
-    resolution = int((right_x - left_x)  * resolution_factor)
-    num_cols = int((right_x - left_x) / resolution)
-    num_rows = int((bottom_y - top_y) / resolution)
-    angle_grid = [[0 for x in range(num_cols)] for y in range(num_rows)]
-
-    # Calculate angle grid
-    build_angle_grid(angle_grid, num_rows, num_cols, noise_step, z_noise_offset)
+    # Build AngleGrid
+    angle_grid = AngleGrid(width=width, height=height, grid_scale_factor=.1, resolution_factor=resolution_factor, z_noise_offset=z_noise_offset, noise_step=noise_step)
 
     # Visualize FlowField
-    # visualize_flow_field(angle_grid, num_rows, num_cols, resolution)
+    angle_grid.visualize_flow_field()
+    print()
 
     # Build ParticleManager
-    particle_manager = FlowParticleFactory(max_lines=max_lines_number, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y)
+    particle_manager = FlowParticleFactory(max_lines=max_lines_number, left_x=angle_grid.left_x, right_x=angle_grid.right_x, top_y=angle_grid.top_y, bottom_y=angle_grid.bottom_y)
 
 
 def draw():
-    global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines_per_layer, line_length, max_lines_number, particle_manager
-    fill(360, 100, 100)
+    global num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines_per_layer, line_length, max_lines_number, particle_manager
 
     if frameCount < 50:
 
         # 0. Generate parameters for this layer
         parameters = calculate_layer_parameters(frameCount=frameCount, lines_per_layer=lines_per_layer, emotion="surprise", line_length=line_length)
-        print([str(p) for p in parameters])
 
         # 1. Generate the particles for this layer
-        particle_manager.build_layer_of_particles(*parameters)
+        # particle_manager.build_layer_of_particles(*parameters)
 
     # 2. Completely draw the particles of the layer
     # while particle_manager.particles:
-    particle_manager.iterate(angle_grid, resolution)
+    #     particle_manager.iterate(angle_grid)

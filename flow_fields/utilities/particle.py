@@ -25,8 +25,17 @@ class FlowParticle:
         self.stroke_weight = stroke_weight
         self.opacity = opacity
         self.color = self._determine_color(emotion=emotion, x=x, y=y)
-        # self.color = EmotionalColorPalette.determine_color_from_position(self.pos.x, self.pos.y)
-        # self.velocity.setMag(starting_velocity)
+
+        print(self)
+
+
+    def __str__(self):
+        return "Position ({}, {}) Angle: {}, Magnitude: {}, Velocity: {}, Emotion: {}".format(self.pos.x, self.pos.y, degrees(self.pos.heading()), self.pos.mag(), self.velocity.mag(), self.emotion)
+
+    def _is_out_of_bounds(self, left_x, top_y):
+        x_pos = self.pos.x - left_x
+        y_pos = self.pos.y - top_y
+        return x_pos < left_x or x_pos > width - left_x or y_pos < top_y or y_pos > height - top_y
 
     def _determine_color(self, emotion, x, y):
         color_from_emotion = EmotionalColorPalette.determine_color_from_emotion(emotion)
@@ -34,34 +43,28 @@ class FlowParticle:
         # color_from_gradient = EmotionalColorPalette.determine_color_from_gradient(x, y)
         return color_from_emotion
 
+    def _apply_vector(self, vector):
+        self.velocity.add(vector)
+        self.velocity.limit(self.max_speed)
+        self.pos.add(self.velocity)
+
     def draw(self):
         # strokeCap(SQUARE)
+        print("DRAWING {} degree, {} magnitude line from {}, {} ---> {},{}".format(degrees(self.pos.heading()), self.pos.mag(), self.prev_pos.x, self.prev_pos.y, self.pos.x, self.pos.y))
         strokeWeight(self.stroke_weight)
         stroke(self.color[0], self.color[1], self.color[2], self.opacity)
+        circle(self.pos.x, self.pos.y, 1)
         line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
 
 
-    def __str__(self):
-        return "Position ({}, {}) Velocity: {}, Emotion: {}".format(self.pos.x, self.pos.y, self.velocity.mag())
-
-    def iterate(self, angle_grid, resolution, left_x, top_y):
+    def iterate(self, angle_grid):
 
         # Determine Force from Flow Field
-        x_offset = self.pos.x - left_x
-        y_offset = self.pos.y - top_y
-        column_index = int(x_offset / resolution)
-        row_index = int(y_offset / resolution)
-        row_index = max(0, row_index) if row_index < len(angle_grid) else len(angle_grid) - 1
-        column_index = max(0, column_index) if column_index < len(angle_grid[row_index]) else len(angle_grid[row_index]) - 1
-        grid_angle = angle_grid[row_index][column_index]
-        flow_field_force = PVector.fromAngle(grid_angle)
+        flow_field_force = angle_grid.fetch_angle_vector_from_position(self.pos.x, self.pos.y)
         flow_field_force.mult(self.sensitivity)
 
-
         # Apply Accelaration
-        self.velocity.add(flow_field_force)
-        self.velocity.limit(self.max_speed)
-        self.pos.add(self.velocity)
+        self._apply_vector(flow_field_force)
 
         # Draw
         self.draw()
@@ -72,13 +75,8 @@ class FlowParticle:
         self.length += self.velocity.mag()
 
     def is_finished(self, left_x, top_y):
-        return self.is_out_of_bounds(left_x=left_x, top_y=top_y) or self.length > self.max_length
+        return self._is_out_of_bounds(left_x=left_x, top_y=top_y) or self.length > self.max_length
         
-    def is_out_of_bounds(self, left_x, top_y):
-        x_pos = self.pos.x - left_x
-        y_pos = self.pos.y - top_y
-        return x_pos < left_x or x_pos > width - left_x or y_pos < top_y or y_pos > height - top_y
-
     def reset(self, left_x, top_y):
         self.pos = PVector(randint(left_x, width - left_x), randint(top_y, height - top_y))
         self.length = 0

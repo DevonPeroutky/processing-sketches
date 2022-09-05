@@ -8,7 +8,7 @@ from utilities.utils import visualize_flow_field
 from reader import UnixPipeReader
 
 noise_step = .03
-z_noise_step = 0.001
+z_noise_step = 0.005
 angle_grid = [[]]
 num_rows = 0
 num_cols = 0
@@ -23,10 +23,10 @@ lines = {}
 resolution_factor = .01
 particle_manager = None
 
-def calculate_layer_parameters(frameCount, lines_per_layer, emotion, line_length):
-    stroke_weight = int(max(50 - (frameCount), 2))
-    # stroke_weight = 40
-    opacity = int(min((frameCount/3) + 1, 10))
+def calculate_layer_parameters_from_emotion(lines_per_layer, emotion, line_length):
+    # stroke_weight = int(max(50 - (frameCount), 2))
+    stroke_weight = 40
+    # opacity = int(min((frameCount/3) + 1, 10))
     opacity = 5
     max_speed = 3
     starting_velocity = 1
@@ -43,6 +43,7 @@ def build_angle_grid(angle_grid, num_rows, num_cols, noise_step, z_noise_offset)
             angle_grid[row][col] = angle
             x_noise_offset += noise_step
         y_noise_offset += noise_step
+
 
 def setup():
     global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager
@@ -79,12 +80,14 @@ def setup():
 def draw():
     global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, grid_scale_factor, left_x, right_x, top_y, bottom_y, lines_per_layer, line_length, max_lines_number, particle_manager
     
-    # Particle Lifecyle Management
+    # Move particles through flow field
     particle_manager.iterate(angle_grid, resolution) 
 
-    # 3. Build the Angle Grid for the next layer
-    z_noise_offset += z_noise_step
-    build_angle_grid(angle_grid, num_rows, num_cols, noise_step, z_noise_offset)
+    # print(len(particle_manager.particles.keys()))
+
+    # Incrementally update flow field
+    # z_noise_offset += z_noise_step
+    # build_angle_grid(angle_grid, num_rows, num_cols, noise_step, z_noise_offset)
 
 def grab_emotional_parameters():
     FIFO = "/tmp/EMOTIONAL_PIPE"
@@ -95,4 +98,5 @@ def update_configuration_from_emotions(emotions):
 
     if particle_manager:
         for emotion in emotions:
+            # particle_manager.generate_layer_from_emotion_payload(emotion)
             particle_manager.generate_particles_from_emotion_payload(emotion)

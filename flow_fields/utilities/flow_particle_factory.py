@@ -10,14 +10,14 @@ class FlowParticleFactory:
         self.top_y = top_y
         self.bottom_y = bottom_y
 
-    def iterate(self, angle_grid, resolution):
+    def iterate(self, angle_grid):
         for (key, particle) in self.particles.items():
             if particle.is_finished(self.left_x, self.top_y):
                 self.particles.pop(key)
             else:
-                particle.iterate(angle_grid, resolution, self.left_x, self.top_y)
+                particle.iterate(angle_grid)
 
-    def generate_particles_from_emotion_payload(self, payload):
+    def generate_layer_from_emotion_payload(self, payload):
         """
         Example Payload:
         {
@@ -51,8 +51,73 @@ class FlowParticleFactory:
 
         face_center_x = face_location['x']
         face_center_y = face_location['y']
+
+        # Mapping the position of the face in the webcam to the corresponding position in the canvas
+        # TODO. Send this info via the pipe instead of hardcoding it.
+        particle_x = int(round(map(face_center_x, 1280, 0, 0, 1000)))
+        particle_y = int(round(map(face_center_y, 0, 720, 0, 1000)))
+        print("Mapping ({}, {}) --> ({}, {})".format(face_center_x, face_center_y, particle_x, particle_y))
+
+        # TODO: Make this better
+        max_speed = random.randint(2, 4)
+        starting_velocity = random.randint(1, 2)
+
+        print("EMTION ({}): {}".format(dominant_emotion, emotion))
+
+        for _ in range(0, 200):
+            particle = FlowParticle(
+                x=random.randint(self.left_x, self.right_x),
+                y=random.randint(self.top_y, self.bottom_y),
+                starting_velocity=starting_velocity,
+                max_speed=max_speed,
+                emotion=dominant_emotion,
+                max_length=max_length,
+                stroke_weight=10,
+                opacity=2
+            )
+
+            self.particles[id(particle)] = particle
+
+    def generate_particles_from_emotion_payload(self, payload):
+        """
+        Example Payload:
+        {
+            'emotion': {
+                'angry': 13.037654757499695,
+                'disgust': 0.000244021202888689,
+                'fear': 17.94908195734024,
+                'happy': 1.0951195861252927e-05,
+                'sad': 68.58017444610596,
+                'surprise': 0.004346260902821086,
+                'neutral': 0.4284909926354885
+            },
+            'dominant_emotion': 'sad',
+            'region': {
+                'x': 23,
+                'y': 23,
+                'w': 265,
+                'h': 265
+            }
+        }
+        """
+        emotion = payload.get('emotion')
+        face_location = payload.get('region')
+        dominant_emotion = payload.get('dominant_emotion')
+        assert face_location
+        assert emotion
+        assert dominant_emotion
+
+        # TODO: CHANGE THIS
+        max_length = 500
+
         face_width = int(round(face_location['w']))
         face_height = int(round(face_location['h']))
+        face_center_x = face_location['x']
+        face_center_y = face_location['y']
+
+        stroke(0,0,0, 100)
+        noFill()
+        circle(face_center_x, face_center_y, face_width)
 
         # Mapping the position of the face in the webcam to the corresponding position in the canvas
         # TODO. Send this info via the pipe instead of hardcoding it.
@@ -70,8 +135,8 @@ class FlowParticleFactory:
             for _ in range(0, quantity):
 
                 # Random distribute new particles in face box
-                x_offset = random.randint(int(round(-face_width / 4)), int(round(face_width / 4)))
-                y_offset = random.randint(int(round(-face_height / 4)), int(round(face_height / 4)))
+                x_offset = randomGaussian() * (face_width / 4)
+                y_offset = randomGaussian() * (face_height / 4)
                 particle = FlowParticle(
                     x=particle_x + x_offset,
                     y=particle_y + y_offset,
