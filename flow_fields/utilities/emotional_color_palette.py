@@ -2,7 +2,8 @@ import random
 
 # HSB
 emotional_palette = {
-    "neutral": (0, 0, 87),# GRAY
+    "neutral": (153, 100, 67),# GRAY
+    # "neutral": (0, 0, 87),# GRAY
     "angry": (338, 95, 76),     # RED
     "sad": (209, 100, 64),       # BLUE
     "happy": (134, 100, 38),       # GREEN

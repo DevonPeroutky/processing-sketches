@@ -13,7 +13,7 @@ from random import randint, random
 from emotional_color_palette import EmotionalColorPalette
 
 class FlowParticle:
-    def __init__(self, x, y, max_length, emotion, starting_angle=None, sensitivity=1, starting_velocity=2, max_speed=3, stroke_weight=1, opacity=10, color=None):
+    def __init__(self, x, y, emotion, max_length=750, starting_angle=None, sensitivity=1, starting_velocity=2, max_speed=3, stroke_weight=1, opacity=10, color=None):
         self.max_length = max_length
         self.pos = PVector(x, y)
 
@@ -58,7 +58,6 @@ class FlowParticle:
         # strokeWeight(self.stroke_weight)
         noisy_stroke_weight = max(noise(self.length / self.max_length) * self.stroke_weight *2, 30)
         # decay_weight = max((1 - (self.length / self.max_length)) * self.stroke_weight, 5)
-        print(self)
         strokeWeight(noisy_stroke_weight)
         stroke(self.color[0], self.color[1], self.color[2], self.opacity)
         line(self.pos.x, self.pos.y, self.prev_pos.x, self.prev_pos.y)
