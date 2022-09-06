@@ -82,3 +82,5 @@ def draw():
         for particle in layer:
             if not particle.is_finished(angle_grid.left_x, angle_grid.top_y):
                 particle.iterate(angle_grid)
+            else:
+                particle.reset(angle_grid.left_x, angle_grid.top_y, emotion=EmotionalColorPalette.get_random_emotion())

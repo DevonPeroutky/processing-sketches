@@ -42,7 +42,7 @@ class FlowParticle:
         y_pos = self.pos.y - top_y
         return x_pos < 0 or x_pos > width - left_x - left_x or y_pos < 0 or y_pos > height - top_y
 
-    def _determine_color(self, emotion, x, y):
+    def _determine_color(self, emotion, x=None, y=None):
         color_from_emotion = EmotionalColorPalette.determine_color_from_emotion(emotion)
         # color_from_position = EmotionalColorPalette.determine_color_from_position(x, y)
         # color_from_gradient = EmotionalColorPalette.determine_color_from_gradient(x, y)
@@ -83,9 +83,13 @@ class FlowParticle:
     def is_finished(self, left_x, top_y):
         return self._is_out_of_bounds(left_x=left_x, top_y=top_y) or self.length > self.max_length
         
-    def reset(self, left_x, top_y):
+    def reset(self, left_x, top_y, emotion = None, color = None):
         self.pos = PVector(randint(left_x, width - left_x), randint(top_y, height - top_y))
         self.length = 0
         self.velocity.mult(0)
         self.prev_pos = self.pos.copy()
+
+        assert emotion or color
+        self.emotion = emotion
+        self.color = color or self._determine_color(emotion=emotion)
 
