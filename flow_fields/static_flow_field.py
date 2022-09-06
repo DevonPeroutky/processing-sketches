@@ -20,7 +20,7 @@ def setup():
     global particles, angle_grids, noise_step, z_noise_offset, resolution_factor, grid_scale_factor, max_lines_number
 
     colorMode(HSB, 360, 100, 100)
-    size(1000, 1000)
+    size(1720, 1120)
 
     # Set background_color
     background(0, 0, 100)

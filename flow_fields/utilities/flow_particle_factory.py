@@ -1,3 +1,4 @@
+from emotional_color_palette import EmotionalColorPalette
 import random
 from particle import FlowParticle
 
@@ -10,10 +11,13 @@ class FlowParticleFactory:
         self.top_y = top_y
         self.bottom_y = bottom_y
 
-    def iterate(self, angle_grid):
+    def iterate(self, angle_grid, reset=False):
         for (key, particle) in self.particles.items():
             if particle.is_finished(self.left_x, self.top_y):
-                self.particles.pop(key)
+                if reset:
+                    particle.reset(angle_grid.left_x, angle_grid.top_y, EmotionalColorPalette.get_random_emotion())
+                else:
+                    self.particles.pop(key)
             else:
                 particle.iterate(angle_grid)
 

@@ -53,7 +53,7 @@ def draw():
 
     # Macro constants
     iterations_per_draw = 1
-    max_additional_lines_per_draw = 500
+    max_additional_lines_per_draw = 1000
     
     # Particle Constants
     ambient_emotion = EmotionalColorPalette.get_random_emotion()
@@ -64,7 +64,7 @@ def draw():
     starting_velocity = randint(3, 5)
 
     for _ in range(0, iterations_per_draw):
-        ambient_particle_manager.iterate(angle_grid)
+        ambient_particle_manager.iterate(angle_grid, reset=True)
         emotional_particle_manager.iterate(angle_grid)
         background_particle_manager.iterate(angle_grid)
 
