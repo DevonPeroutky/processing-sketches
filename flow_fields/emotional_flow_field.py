@@ -15,9 +15,12 @@ background_particle_manager = None
 background_color = (0, 0, 100)
 noise_step = .03
 z_noise_offset = 0
+total_particles_created = 0
+
 
 def setup():
     global emotional_particle_manager, ambient_particle_manager, angle_grid, background_color, background_particle_manager, noise_step, z_noise_offset
+
 
     colorMode(HSB, 360, 100, 100)
     size(1792, 1120)
@@ -46,19 +49,19 @@ def setup():
 
 
 def draw():
-    global emotional_particle_manager, ambient_particle_manager, background_particle_manager, angle_grid, face_center_y, face_center_x, face_width, background_color, noise_step, z_noise_offset
+    global emotional_particle_manager, ambient_particle_manager, background_particle_manager, angle_grid, face_center_y, face_center_x, face_width, background_color, noise_step, z_noise_offset, total_particles_created
 
     # Macro constants
-    iterations_per_draw = 2
-    max_additional_lines_per_draw = 50
+    iterations_per_draw = 1
+    max_additional_lines_per_draw = 500
     
     # Particle Constants
-    ambient_emotion = "neutral"
-    line_length = 50
+    ambient_emotion = EmotionalColorPalette.get_random_emotion()
+    line_length = 1000
     stroke_weight = 40
-    opacity = 60
-    max_speed = 3
-    starting_velocity = randint(1, 3)
+    opacity = 70
+    max_speed = 10
+    starting_velocity = randint(3, 5)
 
     for _ in range(0, iterations_per_draw):
         ambient_particle_manager.iterate(angle_grid)
@@ -76,7 +79,8 @@ def draw():
     #     starting_velocity=starting_velocity,
     #     color=background_color,
     # )
-    ambient_particle_manager.build_layer_of_particles(
+    color = EmotionalColorPalette.determine_color_from_emotion(ambient_emotion)
+    particles_created = ambient_particle_manager.build_layer_of_particles(
         quantity=max_additional_lines_per_draw,
         line_length=line_length,
         emotion=ambient_emotion,
@@ -84,16 +88,17 @@ def draw():
         opacity=opacity,
         max_speed=max_speed,
         starting_velocity=starting_velocity,
-        color=(209, randint(50, 90), 64)
+        color=(color[0], color[2], 50)
     )
-    
 
+    total_particles_created += particles_created
+    
     # Slightly change the angle_grid overtime
     if (frameCount % (24 * 1) == 0):
         z_noise_offset += .005
         angle_grid.build_angle_grid(z_noise_offset, noise_step)
     
-    print("{}-{}".format(len(emotional_particle_manager.particles.keys()), frameRate))
+    print("{}-{}-{}".format(total_particles_created, len(emotional_particle_manager.particles.keys()), frameRate))
 
 
 def grab_emotional_parameters():

@@ -35,12 +35,12 @@ def setup():
             x=500,
             y=500,
             sensitivity=10,
-            starting_velocity=i*5,
-            max_speed=500,
+            starting_velocity=i*1,
+            max_speed=10,
             emotion="surprise",
-            max_length=1500,
+            max_length=150,
             stroke_weight=3,
-            opacity=100
+            opacity=70
         )
         for i in range(0, 10)
     ]
@@ -48,6 +48,10 @@ def setup():
 
 def draw():
     global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager, resolution, partcles
+    # strokeWeight(10)
+    # stroke(120, 100, 100, 1)
+    # for i in range(0, 50, 5):
+    #     line(i, i, (i+1)*5, (i+1)*5)
 
     if frameCount < 50:
         for particle in particles:

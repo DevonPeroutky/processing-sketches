@@ -56,7 +56,7 @@ def setup():
                 max_length=1000,
                 stroke_weight=randint(30, 40),
                 color=color,
-                opacity=70,
+                opacity=50
             ) for p in range(0, particles_per_layer)
         ]
         particles.append(layer)
@@ -65,6 +65,7 @@ def setup():
         AngleGrid(width=width, height=height, grid_scale_factor=.1, resolution_factor=resolution_factor, z_noise_offset=0, noise_step=noise_step)
         for z in range(0, len(colors))
     ]
+    # Reverse for Fun
     # for idx, a in enumerate(angle_grids):
     #     if idx % 2 == 0:
     #         a.reverse_angle_grid()

@@ -32,7 +32,7 @@ class FlowParticle:
         # starting_angle = starting_angle or 0
         starting_velocity_vector = PVector.fromAngle(starting_angle)
         starting_velocity_vector.setMag(starting_velocity)
-        self._apply_vector(starting_velocity_vector)
+        # self._apply_vector(starting_velocity_vector)
 
     def __str__(self):
         return "Position ({}, {}) Angle: {}, Magnitude: {}, MAXSPEED: {}, Velocity: {}, Emotion: {}, LENGTH: {}".format(self.pos.x, self.pos.y, degrees(self.pos.heading()), self.pos.mag(), self.max_speed, self.velocity.mag(), self.emotion, self.length)
@@ -56,7 +56,7 @@ class FlowParticle:
     def draw(self):
         strokeCap(SQUARE)
         # strokeWeight(self.stroke_weight)
-        noisy_stroke_weight = max(noise(self.length / self.max_length) * self.stroke_weight *2, 30)
+        noisy_stroke_weight = max(noise(self.length / self.max_length) * self.stroke_weight * 2, 25)
         # decay_weight = max((1 - (self.length / self.max_length)) * self.stroke_weight, 5)
         strokeWeight(noisy_stroke_weight)
         stroke(self.color[0], self.color[1], self.color[2], self.opacity)
