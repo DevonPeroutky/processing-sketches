@@ -2,6 +2,7 @@ from emotional_color_palette import EmotionalColorPalette
 import random
 from particle import FlowParticle
 
+
 class FlowParticleFactory:
     def __init__(self, max_lines, left_x, right_x, top_y, bottom_y):
         self.particles = {}
@@ -15,7 +16,8 @@ class FlowParticleFactory:
         for (key, particle) in self.particles.items():
             if particle.is_finished(self.left_x, self.top_y):
                 if reset:
-                    particle.reset(angle_grid.left_x, angle_grid.top_y, EmotionalColorPalette.get_random_emotion())
+                    particle.reset(angle_grid.left_x, angle_grid.top_y,
+                                   EmotionalColorPalette.get_random_emotion())
                 else:
                     self.particles.pop(key)
             else:
@@ -66,21 +68,25 @@ class FlowParticleFactory:
         max_speed = random.randint(5, 10)
         starting_velocity = random.randint(3, 5)
         creation_factor = .5
-        opacity = 1
+        opacity = 10
 
-        particles_to_instantiate = [(emotion, int(round(value) * creation_factor)) for emotion, value in emotion.items() if value > .5]
+        particles_to_instantiate = [(emotion,
+                                     int(round(value) * creation_factor))
+                                    for emotion, value in emotion.items()
+                                    if value > .5]
         buffer = max(0, self.max_lines - len(self.particles.keys()))
         for (emotion, quantity) in particles_to_instantiate:
-            print("Creating {} {} particles at ({}, {})".format(quantity, emotion, particle_x, particle_y))
-            # for _ in range(0, 2):
-            for _ in range(0, min(quantity, buffer)):
+            true_amount = min(quantity, buffer)
+            print("Creating {} {} particles at ({}, {})".format(
+                true_amount, emotion, particle_x, particle_y))
+            for _ in range(0, true_amount):
 
                 # Random distribute new particles in face box
                 # x_offset = randomGaussian() * (face_width / 2)
                 # y_offset = randomGaussian() * (face_height / 2)
-                x=random.randint(self.left_x, self.right_x)
-                y=random.randint(self.top_y, self.bottom_y)
-                starting_angle=radians(random.randint(1, 360))
+                x = random.randint(self.left_x, self.right_x)
+                y = random.randint(self.top_y, self.bottom_y)
+                starting_angle = radians(random.randint(1, 360))
                 particle = FlowParticle(
                     x=x,
                     y=y,
@@ -93,13 +99,21 @@ class FlowParticleFactory:
                     emotion=emotion,
                     max_length=max_length,
                     stroke_weight=40,
-                    opacity=opacity
-                )
+                    opacity=opacity)
 
                 self.particles[id(particle)] = particle
 
-    def build_layer_of_particles(self, quantity, line_length, emotion, stroke_weight, opacity, max_speed, starting_velocity, color=None):
-        particles_to_create = min(quantity, max(0, self.max_lines - len(self.particles.keys())))
+    def build_layer_of_particles(self,
+                                 quantity,
+                                 line_length,
+                                 emotion,
+                                 stroke_weight,
+                                 opacity,
+                                 max_speed,
+                                 starting_velocity,
+                                 color=None):
+        particles_to_create = min(
+            quantity, max(0, self.max_lines - len(self.particles.keys())))
 
         # print("Creating {} particles".format(min(quantity, particles_to_create)))
         for _ in range(0, particles_to_create):
@@ -114,19 +128,25 @@ class FlowParticleFactory:
                 max_length=line_length,
                 stroke_weight=stroke_weight,
                 opacity=opacity,
-                color=color
-            )
+                color=color)
             self.particles[id(particle)] = particle
 
         return particles_to_create
 
-    def spawn_new_reed_groups(self, reed_width, reed_quantity, left_x, top_y, line_length, emotion):
-        group_y = random.randint(top_y, height - top_y) 
-        group_x = random.randint(left_x, width - left_x) 
+    def spawn_new_reed_groups(self, reed_width, reed_quantity, left_x, top_y,
+                              line_length, emotion):
+        group_y = random.randint(top_y, height - top_y)
+        group_x = random.randint(left_x, width - left_x)
         length = line_length
         for _ in range(0, reed_quantity):
             y = group_y + random.randint(0, reed_width)
             x = group_x + random.randint(0, reed_width)
             sensitivity = random.randint(1, 1000)
-            particle = FlowParticle(x=x, y=y, sensitivity=sensitivity, starting_velocity=2, max_speed=5, emotion=emotion, max_length=length)
+            particle = FlowParticle(x=x,
+                                    y=y,
+                                    sensitivity=sensitivity,
+                                    starting_velocity=2,
+                                    max_speed=5,
+                                    emotion=emotion,
+                                    max_length=length)
             self.particles[id(particle)] = particle

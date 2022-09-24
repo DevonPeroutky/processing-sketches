@@ -1,3 +1,7 @@
+"""
+Colorful flow field that is always generating using AngleGrid, but just a list of particles (probably deprecated).
+"""
+
 import sys
 
 sys.path.append('/Users/devonperoutky/Development/processing/utilities')
@@ -60,7 +64,7 @@ def setup():
                          starting_velocity=randint(3, 5),
                          max_speed=10,
                          emotion=EmotionalColorPalette.get_random_emotion(),
-                         max_length=2000,
+                         max_length=1000,
                          stroke_weight=randint(30, 40),
                          color=color,
                          opacity=50) for p in range(0, particles_per_layer)
@@ -75,11 +79,6 @@ def setup():
                   z_noise_offset=0,
                   noise_step=noise_step) for z in range(0, len(colors))
     ]
-    # Reverse for Fun
-    # for idx, a in enumerate(angle_grids):
-    #     if idx % 2 == 0:
-    #         a.reverse_angle_grid()
-
     print("{} particles".format(len(particles)))
 
 
@@ -92,3 +91,8 @@ def draw():
         for particle in layer:
             if not particle.is_finished(angle_grid.left_x, angle_grid.top_y):
                 particle.iterate(angle_grid)
+            else:
+                particle.reset(
+                    angle_grid.left_x,
+                    angle_grid.top_y,
+                    emotion=EmotionalColorPalette.get_random_emotion())

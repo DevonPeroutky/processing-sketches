@@ -2,17 +2,18 @@ import random
 
 # HSB
 emotional_palette = {
-    "neutral": (153, 100, 67),# TEAL-ISH
+    "neutral": (153, 100, 67),  # TEAL-ISH
     # "neutral": (0, 0, 87),# GRAY
-    "angry": (338, 95, 76),     # RED
-    "sad": (209, 100, 64),       # BLUE
-    "happy": (134, 100, 38),       # GREEN
-    "surprise": (153, 100, 67), # TEAL-ISH
-    "disgust": (317, 100, 32),     # PURPLE
-    "fear": (21, 100, 96),     # ORANGE
+    "angry": (338, 95, 76),  # RED
+    "sad": (209, 100, 64),  # BLUE
+    "happy": (134, 100, 38),  # GREEN
+    "surprise": (153, 100, 67),  # TEAL-ISH
+    "disgust": (317, 100, 32),  # PURPLE
+    "fear": (21, 100, 96),  # ORANGE
     # "black": (0, 0, 0),
-    # "white": (0, 0, 100),
+    "white": (0, 0, 100),
 }
+
 
 class EmotionalColorPalette:
     @staticmethod
@@ -26,10 +27,9 @@ class EmotionalColorPalette:
         random_emotion = "neutral"
         while random_emotion == "neutral":
             keys = emotional_palette.keys()
-            index = random.randint(0, len(keys)-1)
+            index = random.randint(0, len(keys) - 1)
             random_emotion = keys[index]
         return random_emotion
-
 
     @staticmethod
     def determine_color_from_position(x, y):
@@ -50,14 +50,14 @@ class EmotionalColorPalette:
     @staticmethod
     def determine_color_from_gradient(x, y):
         visible_y = min(max(0, y), height)
-        r = random.randint(visible_y, visible_y+100)
+        r = random.randint(visible_y, visible_y + 100)
 
         noise_injection = .1
 
         colorA = emotional_palette.get("fear")
         colorB = emotional_palette.get("happy")
         colorC = emotional_palette.get("surprise")
-        
+
         probA = map(visible_y, 0, 1000, 1, .5)
         probB = 1 - probA
         print("{} -> {}".format(y, probA))
@@ -90,8 +90,8 @@ class EmotionalColorPalette:
         0.9 - 1
 
         """
-        assert(sum(weights)) == 1
-        assert(len(weights) == len(population))
+        assert (sum(weights)) == 1
+        assert (len(weights) == len(population))
         r = random.random()
 
         curr_propability = 0
@@ -100,4 +100,4 @@ class EmotionalColorPalette:
 
             if r <= curr_propability:
                 return population[i]
-        assert(False)
+        assert (False)

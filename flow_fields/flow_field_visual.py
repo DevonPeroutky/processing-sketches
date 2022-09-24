@@ -1,10 +1,16 @@
+"""
+Simple visualization of a FlowField.
+"""
+
 step_size = 20
 seed = 0
 zOffset = 0
 
+
 def setup():
     size(500, 500)
     frameRate(24)
+
 
 def draw():
     global zOffset
@@ -22,11 +28,12 @@ def draw():
         xOffset += .005
     zOffset += .05
 
+
 def drawVector(cx, cy, len, angle):
-  pushMatrix()
-  translate(cx, cy)
-  rotate(angle)
-  line(0,0,len, 0)
-  # line(len, 0, len - 3, -3)
-  # line(len, 0, len - 3, 3)
-  popMatrix()
+    pushMatrix()
+    translate(cx, cy)
+    rotate(angle)
+    line(0, 0, len, 0)
+    # line(len, 0, len - 3, -3)
+    # line(len, 0, len - 3, 3)
+    popMatrix()

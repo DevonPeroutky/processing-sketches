@@ -1,6 +1,10 @@
-from emotional_color_palette import EmotionalColorPalette
-from flow_particle_factory import FlowParticleFactory
-from utils import visualize_flow_field
+"""
+Not currently working
+"""
+
+from utilities.emotional_color_palette import EmotionalColorPalette
+from utilities.flow_particle_factory import FlowParticleFactory
+from utilities.angle_grid import AngleGrid
 
 noise_step = .03
 z_noise_step = 0
@@ -10,13 +14,14 @@ num_cols = 0
 z_noise_offset = 0
 grid_scale_factor = .2
 lines_per_render = 100
-left_x, right_x, top_y, bottom_y = [0]*4
+left_x, right_x, top_y, bottom_y = [0] * 4
 starting_num_lines = 0
 line_length = 50
 max_lines_number = 10000
 lines = {}
 resolution_factor = .01
 particle_manager = FlowParticleFactory(max_lines=max_lines_number)
+
 
 def setup():
     global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y, line_length, particle_manager
@@ -25,12 +30,12 @@ def setup():
     background(255)
     smooth()
 
-    left_x = int(width * (0-grid_scale_factor))
+    left_x = int(width * (0 - grid_scale_factor))
     right_x = int(width * (1 + grid_scale_factor))
-    top_y = int(height * (0-grid_scale_factor))
-    bottom_y = int(height * (1+ grid_scale_factor))
+    top_y = int(height * (0 - grid_scale_factor))
+    bottom_y = int(height * (1 + grid_scale_factor))
 
-    resolution = int((right_x - left_x)  * resolution_factor)
+    resolution = int((right_x - left_x) * resolution_factor)
     num_cols = int((right_x - left_x) / resolution)
     num_rows = int((bottom_y - top_y) / resolution)
     angle_grid = [[0 for x in range(num_cols)] for y in range(num_rows)]
@@ -44,7 +49,8 @@ def setup():
     print("BOTTOM Y: {}".format(bottom_y))
     print("COLS: {}".format(num_cols))
     print("ROWS: {}".format(num_rows))
-    print("TOTAL DIMENSIONS: {} x {}".format(num_cols * resolution, num_rows * resolution))
+    print("TOTAL DIMENSIONS: {} x {}".format(num_cols * resolution,
+                                             num_rows * resolution))
     print("RESOLUTION: {}".format(resolution))
     print("NUMBER OF LINES: {}".format(max_lines_number))
 
@@ -53,7 +59,8 @@ def setup():
     for row in range(0, num_rows):
         x_noise_offset = 0
         for col in range(0, num_cols):
-            angle = noise(x_noise_offset, y_noise_offset, z_noise_offset) * PI * 2
+            angle = noise(x_noise_offset, y_noise_offset,
+                          z_noise_offset) * PI * 2
             angle_grid[row][col] = angle
             x_noise_offset += noise_step
         y_noise_offset += noise_step
@@ -67,7 +74,7 @@ def draw():
     print(width)
     # fill(244, 157, 110)
     # circle(50, 50, 3)
-    
+
     # Visualize Grid
     noStroke()
     for x in range(0, width):
@@ -77,8 +84,10 @@ def draw():
             y_offset = y - top_y
             column_index = int(x_offset / resolution)
             row_index = int(y_offset / resolution)
-            row_index = max(0, row_index) if row_index < len(angle_grid) else len(angle_grid) - 1
-            column_index = max(0, column_index) if column_index < len(angle_grid[row_index]) else len(angle_grid[row_index]) - 1
+            row_index = max(0, row_index) if row_index < len(
+                angle_grid) else len(angle_grid) - 1
+            column_index = max(0, column_index) if column_index < len(
+                angle_grid[row_index]) else len(angle_grid[row_index]) - 1
             grid_angle = angle_grid[row_index][column_index]
 
             hue = noise(x) * 360
@@ -91,4 +100,4 @@ def draw():
     # particle_manager.spawn_new_particles(quantity=lines_per_render, left_x=left_x, right_x=right_x, top_y=top_y, bottom_y=bottom_y, line_length=line_length, emotion="neutral")
 
     # Particle Lifecyle Management
-    # particle_manager.iterate(angle_grid, resolution, left_x, top_y) 
+    # particle_manager.iterate(angle_grid, resolution, left_x, top_y)

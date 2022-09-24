@@ -1,3 +1,6 @@
+"""
+Basic, static FlowField implementation
+"""
 import random
 
 noise_step = .003
@@ -8,7 +11,8 @@ num_cols = 0
 z_noise_offset = 0
 grid_scale_factor = .25
 num_lines = 10000
-left_x, right_x, top_y, bottom_y = [0]*4
+left_x, right_x, top_y, bottom_y = [0] * 4
+
 
 def setup():
     global angle_grid, resolution, num_cols, num_rows, grid_scale_factor, left_x, right_x, top_y, bottom_y
@@ -17,19 +21,21 @@ def setup():
     noLoop()
     # frameRate(1)
 
-    left_x = int(width * (0-grid_scale_factor))
+    left_x = int(width * (0 - grid_scale_factor))
     right_x = int(width * (1 + grid_scale_factor))
-    top_y = int(height * (0-grid_scale_factor))
-    bottom_y = int(height * (1+ grid_scale_factor))
+    top_y = int(height * (0 - grid_scale_factor))
+    bottom_y = int(height * (1 + grid_scale_factor))
 
-    resolution = int(width  * .001) 
+    resolution = int(width * .001)
     num_cols = int((right_x - left_x) / resolution)
     num_rows = int((bottom_y - top_y) / resolution)
     angle_grid = [[0 for x in range(num_cols)] for y in range(num_rows)]
     print("COLS: {}".format(num_cols))
     print("ROWS: {}".format(num_rows))
-    print("TOTAL DIMENSIONS: {} x {}".format(num_cols * resolution, num_rows * resolution))
+    print("TOTAL DIMENSIONS: {} x {}".format(num_cols * resolution,
+                                             num_rows * resolution))
     print("RESOLUTION: {}".format(resolution))
+
 
 def draw():
     global resolution, num_rows, num_cols, angle_grid, z_noise_offset, noise_step, num_lines, grid_scale_factor, left_x, right_x, top_y, bottom_y
@@ -42,7 +48,8 @@ def draw():
     for row in range(0, num_rows):
         x_noise_offset = 0
         for col in range(0, num_cols):
-            angle = noise(x_noise_offset, y_noise_offset, z_noise_offset) * PI * 2
+            angle = noise(x_noise_offset, y_noise_offset,
+                          z_noise_offset) * PI * 2
             # angle = noise(x_noise_offset, y_noise_offset) * PI * 2
             angle_grid[row][col] = angle
             x_noise_offset += noise_step
@@ -68,12 +75,13 @@ def draw():
     # PAY ATTENTION TO THIS
     z_noise_offset += z_noise_step
 
+
 def draw_vector(cx, cy, len, angle):
-  pushMatrix()
-  translate(cx, cy)
-  rotate(angle)
-  line(0,0,len, 0)
-  popMatrix()
+    pushMatrix()
+    translate(cx, cy)
+    rotate(angle)
+    line(0, 0, len, 0)
+    popMatrix()
 
 
 def plot_point(x, y, num_steps, angle_grid):
@@ -88,8 +96,10 @@ def plot_point(x, y, num_steps, angle_grid):
         column_index = int(x_offset / resolution)
         row_index = int(y_offset / resolution)
 
-        row_index = row_index if row_index < len(angle_grid) else len(angle_grid) - 1
-        column_index = column_index if column_index < len(angle_grid[row_index]) else len(angle_grid[row_index]) - 1
+        row_index = row_index if row_index < len(
+            angle_grid) else len(angle_grid) - 1
+        column_index = column_index if column_index < len(
+            angle_grid[row_index]) else len(angle_grid[row_index]) - 1
         grid_angle = angle_grid[row_index][column_index]
         x_step = step_size * cos(grid_angle)
         y_step = step_size * sin(grid_angle)
@@ -115,8 +125,10 @@ def draw_curve(x, y, num_steps, angle_grid):
         row_index = int(y_offset / resolution)
         # print("Indexes: ({}, {})".format(column_index, row_index))
 
-        row_index = row_index if row_index < len(angle_grid) else len(angle_grid) - 1
-        column_index = column_index if column_index < len(angle_grid[row_index]) else len(angle_grid[row_index]) - 1
+        row_index = row_index if row_index < len(
+            angle_grid) else len(angle_grid) - 1
+        column_index = column_index if column_index < len(
+            angle_grid[row_index]) else len(angle_grid[row_index]) - 1
         # print("EDGED INDEXES: ({}, {})".format(column_index, row_index))
         grid_angle = angle_grid[row_index][column_index]
         # print("ANGLE: {}".format(grid_angle))
